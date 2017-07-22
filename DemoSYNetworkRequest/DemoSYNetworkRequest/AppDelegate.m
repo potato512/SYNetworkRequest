@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
+#import "SYNetworkRequest.h"
 
 @interface AppDelegate ()
 
@@ -18,6 +19,16 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    
+    // 网络环境监测
+    [SYNetworkRequest networkMonitoring];
+    
+    
+    [SYNetworkRequest startWithServiceHost:@"http://wwww.hao123.com"];
+//    [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeOther];
+//    [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeXML];
+    
     
     ViewController *rootVC = [ViewController new];
     UINavigationController *rootNav = [[UINavigationController alloc] initWithRootViewController:rootVC];
