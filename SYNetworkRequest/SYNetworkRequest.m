@@ -401,7 +401,7 @@ static NSString *const RequestPOST = @"POST";
 #pragma mark setter
 
 - (void)setRequestType:(RequestContentType)requestType
-{
+{    
     _requestType = requestType;
     
     // 请求数据样式
@@ -416,6 +416,7 @@ static NSString *const RequestPOST = @"POST";
     }
     else if (RequestContentTypeOther == requestType)
     {
+        // 默认
         self.managerHttp.requestSerializer = [AFHTTPRequestSerializer serializer];
     }
 }
@@ -432,7 +433,7 @@ static NSString *const RequestPOST = @"POST";
     }
     else if (ResponseContentTypeJSON == responseType)
     {
-        // 返回格式-json
+        // 返回格式-json 默认
         self.managerHttp.responseSerializer = [AFJSONResponseSerializer serializer];
         self.managerHttp.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
     }

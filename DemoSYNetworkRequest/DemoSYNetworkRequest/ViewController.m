@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "SYNetworkRequest.h"
+#import "CacheNetworkRequest.h"
 
 @interface ViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -23,7 +24,7 @@
     
     self.title = @"网络请求";
     
-    self.array = @[@"network status", @"GET", @"POST", @"UPLOAD", @"DOWNLOAD"];
+    self.array = @[@"network status", @"GET", @"POST", @"UPLOAD", @"DOWNLOAD", @"cache request-reload", @"cache request-never", @"cache request-overdate"];
     
     UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     [self.view addSubview:tableView];
@@ -124,6 +125,24 @@
         } complete:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
             NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
         }];
+        [dataTask resume];
+    }
+    else if (5 == indexPath.row || 6 == indexPath.row || 7 == indexPath.row)
+    {
+        // 缓存请求-reload/never/overDate
+        NSString *url = @"http://rapapi.org/mockjsdata/15885/getUserInfo";
+        
+        NetworkCacheType cacheType = (5 == indexPath.row ? NetworkCacheTypeAlways : (6 == indexPath.row ? NetworkCacheTypeNever : NetworkCacheTypeWhileOverdue));
+        NSURLSessionDataTask *dataTask = [CacheNetworkRequest requestWithUrl:url parameters:nil methord:RequestHttpTypeGET requestContentType:0 responseContentType:0 upload:^(long long total, long long complete) {
+            NSLog(@"upload complete = %@", @(complete));
+        } download:^(long long total, long long complete) {
+            NSLog(@"download complete = %@", @(complete));
+        } complete:^(id object) {
+          
+            NSLog(@"object = %@", object);
+
+        } target:self enableView:YES cacheType:cacheType cacheTime:NetworkCacheTimeDay];
+        
         [dataTask resume];
     }
 }

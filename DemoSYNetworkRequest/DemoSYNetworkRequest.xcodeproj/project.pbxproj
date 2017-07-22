@@ -17,6 +17,9 @@
 		A73FEB821F23536C00163F29 /* DemoSYNetworkRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEB811F23536C00163F29 /* DemoSYNetworkRequestTests.m */; };
 		A73FEB8D1F23536C00163F29 /* DemoSYNetworkRequestUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEB8C1F23536C00163F29 /* DemoSYNetworkRequestUITests.m */; };
 		A73FEBAB1F235C0600163F29 /* SYNetworkRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEBAA1F235C0600163F29 /* SYNetworkRequest.m */; };
+		A73FEBAE1F23668500163F29 /* CacheNetworkRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEBAD1F23668500163F29 /* CacheNetworkRequest.m */; };
+		A73FEBB41F2366A400163F29 /* SYCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEBB11F2366A400163F29 /* SYCacheManager.m */; };
+		A73FEBB51F2366A400163F29 /* SYNetworkCache.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEBB31F2366A400163F29 /* SYNetworkCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +58,12 @@
 		A73FEB8E1F23536C00163F29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A73FEBA91F235C0600163F29 /* SYNetworkRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYNetworkRequest.h; sourceTree = "<group>"; };
 		A73FEBAA1F235C0600163F29 /* SYNetworkRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYNetworkRequest.m; sourceTree = "<group>"; };
+		A73FEBAC1F23668500163F29 /* CacheNetworkRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CacheNetworkRequest.h; sourceTree = "<group>"; };
+		A73FEBAD1F23668500163F29 /* CacheNetworkRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CacheNetworkRequest.m; sourceTree = "<group>"; };
+		A73FEBB01F2366A400163F29 /* SYCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYCacheManager.h; sourceTree = "<group>"; };
+		A73FEBB11F2366A400163F29 /* SYCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYCacheManager.m; sourceTree = "<group>"; };
+		A73FEBB21F2366A400163F29 /* SYNetworkCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYNetworkCache.h; sourceTree = "<group>"; };
+		A73FEBB31F2366A400163F29 /* SYNetworkCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYNetworkCache.m; sourceTree = "<group>"; };
 		C6A66117D1B2F9B8319DE60B /* Pods-DemoSYNetworkRequest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DemoSYNetworkRequest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DemoSYNetworkRequest/Pods-DemoSYNetworkRequest.debug.xcconfig"; sourceTree = "<group>"; };
 		C78DCE62A41DF18AAEA58FD7 /* libPods-DemoSYNetworkRequest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DemoSYNetworkRequest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE051F988288DB8E3ED03A24 /* Pods-DemoSYNetworkRequest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DemoSYNetworkRequest.release.xcconfig"; path = "Pods/Target Support Files/Pods-DemoSYNetworkRequest/Pods-DemoSYNetworkRequest.release.xcconfig"; sourceTree = "<group>"; };
@@ -123,6 +132,9 @@
 				A73FEB6B1F23536C00163F29 /* AppDelegate.m */,
 				A73FEB6D1F23536C00163F29 /* ViewController.h */,
 				A73FEB6E1F23536C00163F29 /* ViewController.m */,
+				A73FEBAC1F23668500163F29 /* CacheNetworkRequest.h */,
+				A73FEBAD1F23668500163F29 /* CacheNetworkRequest.m */,
+				A73FEBAF1F2366A400163F29 /* SYCacheManager */,
 				A73FEBA81F235B6C00163F29 /* SYNetworkRequest */,
 				A73FEB671F23536C00163F29 /* Supporting Files */,
 			);
@@ -167,6 +179,17 @@
 			);
 			name = SYNetworkRequest;
 			path = ../../SYNetworkRequest;
+			sourceTree = "<group>";
+		};
+		A73FEBAF1F2366A400163F29 /* SYCacheManager */ = {
+			isa = PBXGroup;
+			children = (
+				A73FEBB01F2366A400163F29 /* SYCacheManager.h */,
+				A73FEBB11F2366A400163F29 /* SYCacheManager.m */,
+				A73FEBB21F2366A400163F29 /* SYNetworkCache.h */,
+				A73FEBB31F2366A400163F29 /* SYNetworkCache.m */,
+			);
+			path = SYCacheManager;
 			sourceTree = "<group>";
 		};
 		EC025A298BF4D1E79DBD3780 /* Pods */ = {
@@ -359,10 +382,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A73FEBB41F2366A400163F29 /* SYCacheManager.m in Sources */,
 				A73FEBAB1F235C0600163F29 /* SYNetworkRequest.m in Sources */,
 				A73FEB6F1F23536C00163F29 /* ViewController.m in Sources */,
 				A73FEB6C1F23536C00163F29 /* AppDelegate.m in Sources */,
 				A73FEB691F23536C00163F29 /* main.m in Sources */,
+				A73FEBB51F2366A400163F29 /* SYNetworkCache.m in Sources */,
+				A73FEBAE1F23668500163F29 /* CacheNetworkRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
