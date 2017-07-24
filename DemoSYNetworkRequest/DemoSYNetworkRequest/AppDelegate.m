@@ -26,8 +26,8 @@
     
     
     [SYNetworkRequest startWithServiceHost:@"http://wwww.hao123.com"];
-//    [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeOther];
-//    [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeXML];
+//    [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeJSON];
+//    [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeOther];
     
     
     ViewController *rootVC = [ViewController new];

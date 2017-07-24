@@ -64,6 +64,7 @@
 		A73FEBB11F2366A400163F29 /* SYCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYCacheManager.m; sourceTree = "<group>"; };
 		A73FEBB21F2366A400163F29 /* SYNetworkCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYNetworkCache.h; sourceTree = "<group>"; };
 		A73FEBB31F2366A400163F29 /* SYNetworkCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYNetworkCache.m; sourceTree = "<group>"; };
+		A7F1A2481F25EFB200849DA6 /* SYNetworkAFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYNetworkAFHTTPSessionManager.h; sourceTree = "<group>"; };
 		C6A66117D1B2F9B8319DE60B /* Pods-DemoSYNetworkRequest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DemoSYNetworkRequest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DemoSYNetworkRequest/Pods-DemoSYNetworkRequest.debug.xcconfig"; sourceTree = "<group>"; };
 		C78DCE62A41DF18AAEA58FD7 /* libPods-DemoSYNetworkRequest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DemoSYNetworkRequest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE051F988288DB8E3ED03A24 /* Pods-DemoSYNetworkRequest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DemoSYNetworkRequest.release.xcconfig"; path = "Pods/Target Support Files/Pods-DemoSYNetworkRequest/Pods-DemoSYNetworkRequest.release.xcconfig"; sourceTree = "<group>"; };
@@ -176,6 +177,7 @@
 			children = (
 				A73FEBA91F235C0600163F29 /* SYNetworkRequest.h */,
 				A73FEBAA1F235C0600163F29 /* SYNetworkRequest.m */,
+				A7F1A2481F25EFB200849DA6 /* SYNetworkAFHTTPSessionManager.h */,
 			);
 			name = SYNetworkRequest;
 			path = ../../SYNetworkRequest;

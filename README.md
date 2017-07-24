@@ -89,3 +89,45 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 }];
 [dataTask resume];
 ~~~ 
+
+
+# 修改完善
+* 20170724 
+  * 版本更新1.1.0
+    * 添加更加请求方式
+    * 初始化请求格式、返回格式
+    * 新建文件SYNetworkAFHTTPSessionManager.h
+~~~ javascript
+/// 请求类型（POST、GET）
+typedef NS_ENUM(NSInteger, RequestHttpType)
+{
+    /// 请求样式-POST
+    RequestHttpTypePOST = 1,
+
+    /// 请求样式-GET
+    RequestHttpTypeGET = 2,
+
+    /// 请求样式-PUT
+    RequestHttpTypePUT = 3,
+
+    /// 请求样式-DELETE
+    RequestHttpTypeDELETE = 4,
+
+    /// 请求样式-HEAD
+    RequestHttpTypeHEAD = 5,
+
+    /// 请求样式-PATCH
+    RequestHttpTypePATCH = 6,
+};
+~~~
+~~~ javascript
+// 初始化请求格式、返回格式
+self.responseType = ResponseContentTypeOther;
+self.requestType = RequestContentTypeOther;
+~~~
+
+
+
+
+
+

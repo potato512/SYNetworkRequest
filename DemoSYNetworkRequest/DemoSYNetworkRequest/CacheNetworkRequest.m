@@ -122,9 +122,17 @@
         controller.view.userInteractionEnabled = isEnable;
     }
     
-    
     // 请求样式
-    NSString *requestMethord = (RequestHttpTypePOST == type ? @"POST" : @"GET");
+    NSString *requestMethord = @"POST";
+    switch (type)
+    {
+        case RequestHttpTypeGET: requestMethord = @"GET";  break;
+        case RequestHttpTypePOST: requestMethord = @"POST"; break;
+        case RequestHttpTypePUT: requestMethord = @"PUT"; break;
+        case RequestHttpTypeDELETE: requestMethord = @"DELETE"; break;
+        case RequestHttpTypeHEAD: requestMethord = @"HEAD"; break;
+        case RequestHttpTypePATCH: requestMethord = @"PATCH"; break;
+    }
     // 请求参数
     NSMutableDictionary *requestDict = [NSMutableDictionary dictionaryWithDictionary:dict];
     

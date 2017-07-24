@@ -53,14 +53,26 @@ typedef NS_ENUM(NSInteger, ResponseContentType)
     ResponseContentTypeOther = 3
 };
 
-/// 请求类型（POST、GET）
+/// 请求类型（GET/POST/PUT/DELETE/HEAD/PATCH）
 typedef NS_ENUM(NSInteger, RequestHttpType)
 {
-    /// 请求样式-post
+    /// 请求样式-POST
     RequestHttpTypePOST = 1,
     
-    /// 请求样式-get
+    /// 请求样式-GET
     RequestHttpTypeGET = 2,
+    
+    /// 请求样式-PUT
+    RequestHttpTypePUT = 3,
+    
+    /// 请求样式-DELETE
+    RequestHttpTypeDELETE = 4,
+    
+    /// 请求样式-HEAD
+    RequestHttpTypeHEAD = 5,
+    
+    /// 请求样式-PATCH
+    RequestHttpTypePATCH = 6,
 };
 
 @interface SYNetworkRequest : NSObject
@@ -110,14 +122,14 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
 
 #pragma mark - 网络请求
 
-#pragma mark 普通POST/GET请求
+#pragma mark 普通请求（GET/POST/PUT/DELETE/HEAD/PATCH）
 
 /**
- *  网络请求-GET/POST
+ *  网络请求（GET/POST/PUT/DELETE/HEAD/PATCH）
  *
  *  @param url              请求地址
  *  @param dict             请求参数
- *  @param methord          请求方式（GET/POST）
+ *  @param methord          请求方式（GET/POST/PUT/DELETE/HEAD/PATCH）
  *  @param uploadProgress   上传进度回调
  *  @param downloadProgress 下载进度回调
  *  @param complete         请求结果回调
@@ -173,5 +185,6 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
                                           parameters:(NSDictionary *)dict
                                     downloadProgress:(void (^)(NSProgress *uploadProgress))downloadProgress
                                             complete:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))complete;
+
 
 @end

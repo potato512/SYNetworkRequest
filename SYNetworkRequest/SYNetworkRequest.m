@@ -7,6 +7,7 @@
 //  https://github.com/AFNetworking/AFNetworking
 
 #import "SYNetworkRequest.h"
+#import "SYNetworkAFHTTPSessionManager.h"
 #import <netinet/in.h>
 
 static NSTimeInterval const APIServiceTimeout = 30.0;
@@ -39,6 +40,10 @@ static NSString *const RequestPOST = @"POST";
         NSAssert(self.hostUrl.host != nil, @"self.hostUrl must be non-nil");
         NSParameterAssert(self.hostUrl.host);
         NSLog(@"<-------已调用“startWithServiceHost:”设置servicehost------->");
+        
+        // 初始化请求格式、返回格式
+        self.responseType = ResponseContentTypeOther;
+        self.requestType = RequestContentTypeOther;
     }
     
     return self;
@@ -145,14 +150,14 @@ static NSString *const RequestPOST = @"POST";
 
 #pragma mark - 网络请求
 
-#pragma mark 普通POST/GET请求
+#pragma mark 普通请求（GET/POST/PUT/DELETE/HEAD/PATCH）
 
 /**
- *  网络请求-GET/POST
+ *  网络请求（GET/POST/PUT/DELETE/HEAD/PATCH）
  *
  *  @param url              请求地址
  *  @param dict             请求参数
- *  @param methord          请求方式（GET/POST）
+ *  @param methord          请求方式（GET/POST/PUT/DELETE/HEAD/PATCH）
  *  @param uploadProgress   上传进度回调
  *  @param downloadProgress 下载进度回调
  *  @param complete         请求结果回调
@@ -166,84 +171,18 @@ static NSString *const RequestPOST = @"POST";
                         downloadProgress:(void (^)(NSProgress *progress))downloadProgress
                                 complete:(void (^)(NSURLResponse *response, id responseObject,  NSError *error))complete
 {
-//    // 请求地址
-//    NSString *requestURL = [[NSURL URLWithString:url relativeToURL:self.managerHttp.baseURL] absoluteString];
-//    // 创建请求
-//    NSURLRequest *request = [self.managerHttp.requestSerializer requestWithMethod:methord URLString:requestURL parameters:dict error:nil];
-//    // 请求
-//    NSURLSessionDataTask *dataTask = [self.managerHttp dataTaskWithRequest:request uploadProgress:uploadProgress downloadProgress:downloadProgress completionHandler:complete];
-    
-
-    // 或
-    NSURLSessionDataTask *dataTask = nil;
-    if ([[methord uppercaseString] isEqualToString:@"GET"])
-    {
-        dataTask = [self requestGetWithUrl:url parameters:dict downloadProgress:downloadProgress complete:complete];
-    }
-    else
-    {
-        dataTask = [self requestPostWithUrl:url parameters:dict uploadProgress:uploadProgress complete:complete];
-    }
-    
-    return dataTask;
-}
-
-- (NSURLSessionDataTask *)requestGetWithUrl:(NSString *)url
-                                 parameters:(NSDictionary *)dict
-                           downloadProgress:(void (^)(NSProgress *progress))downloadProgress
-                                   complete:(void (^)(NSURLResponse *response, id responseObject,  NSError *error))complete
-{
-    // 请求
-    NSURLSessionDataTask *dataTask = [self.managerHttp GET:url parameters:dict progress:^(NSProgress * _Nonnull progress) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (downloadProgress)
-            {
-                downloadProgress(progress);
-            }
-        });
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    NSString *methordType = [methord uppercaseString];
+    NSURLSessionDataTask *dataTask = [self.managerHttp dataTaskWithHTTPMethod:methordType URLString:url parameters:dict uploadProgress:uploadProgress downloadProgress:downloadProgress success:^(NSURLSessionDataTask *task, id responseObject) {
         if (complete)
         {
             complete(task.response, responseObject, nil);
         }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         if (complete)
         {
             complete(task.response, nil, error);
         }
     }];
-    
-    [dataTask suspend];
-    
-    return dataTask;
-}
-
-- (NSURLSessionDataTask *)requestPostWithUrl:(NSString *)url
-                                  parameters:(NSDictionary *)dict
-                              uploadProgress:(void (^)(NSProgress *progress))uploadProgress
-                                    complete:(void (^)(NSURLResponse *response, id responseObject,  NSError *error))complete
-{
-    // 请求
-    NSURLSessionDataTask *dataTask = [self.managerHttp POST:url parameters:dict progress:^(NSProgress * _Nonnull progress) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (uploadProgress)
-            {
-                uploadProgress(progress);
-            }
-        });
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        if (complete)
-        {
-            complete(task.response, responseObject, nil);
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        if (complete)
-        {
-            complete(task.response, nil, error);
-        }
-    }];
-    
-    [dataTask suspend];
     
     return dataTask;
 }
@@ -387,6 +326,10 @@ static NSString *const RequestPOST = @"POST";
     if (_managerHttp == nil)
     {
         NSURL *baseUrl = self.hostUrl;
+        if (![baseUrl.scheme isEqualToString:@"http"])
+        {
+            baseUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", APIServiceHost]];
+        }
         
         _managerHttp = [[AFHTTPSessionManager alloc] initWithBaseURL:baseUrl];
         if ([baseUrl.scheme isEqualToString:@"https"])
@@ -400,6 +343,22 @@ static NSString *const RequestPOST = @"POST";
 
 #pragma mark setter
 
+/*
+ // 请求格式
+ AFHTTPRequestSerializer            二进制格式
+ AFJSONRequestSerializer            JSON
+ AFPropertyListRequestSerializer    PList(是一种特殊的XML,解析起来相对容易)
+ 
+ // 返回格式
+ AFHTTPResponseSerializer           二进制格式
+ AFJSONResponseSerializer           JSON
+ AFXMLParserResponseSerializer      XML,只能返回XMLParser,还需要自己通过代理方法解析
+ AFXMLDocumentResponseSerializer (Mac OS X)
+ AFPropertyListResponseSerializer   PList
+ AFImageResponseSerializer          Image
+ AFCompoundResponseSerializer       组合
+ */
+
 - (void)setRequestType:(RequestContentType)requestType
 {    
     _requestType = requestType;
@@ -412,6 +371,8 @@ static NSString *const RequestPOST = @"POST";
     else if (RequestContentTypeJSON == requestType)
     {
         self.managerHttp.requestSerializer = [AFJSONRequestSerializer serializer];
+        [self.managerHttp.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        // self.managerHttp.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/html", nil];
         self.managerHttp.requestSerializer.timeoutInterval = APIServiceTimeout;
     }
     else if (RequestContentTypeOther == requestType)
@@ -435,7 +396,6 @@ static NSString *const RequestPOST = @"POST";
     {
         // 返回格式-json 默认
         self.managerHttp.responseSerializer = [AFJSONResponseSerializer serializer];
-        self.managerHttp.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
     }
     else if (ResponseContentTypeOther == responseType)
     {

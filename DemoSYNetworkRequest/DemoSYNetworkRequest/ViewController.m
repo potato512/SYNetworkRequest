@@ -99,22 +99,29 @@
     {
         // POST
 //        NSString *url = @"http://rapapi.org/mockjsdata/15885/getVerificationCode";
-        NSDictionary *dict = @{@"phoneNumber":@(13800138000), @"timeStamp":@(456461015645646)};
-        
-        NSString *url = @"http://rapapi.org/mockjsdata/15885/getUserInfo";
+//        NSDictionary *dict = @{@"phoneNumber":@(13800138000), @"timeStamp":@(456461015645646)};
+//        NSString *url = @"http://192.168.3.99:8082/system-front/APIUser/getMsgCode";
+//        NSDictionary *dict = @{@"phone":@(13510213244), @"msgType":@(1)};
+        NSString *url = @"http://192.168.3.99:8088/system-api/user/getTest";
+        NSDictionary *dict = @{};
         
         NSURLSessionDataTask *dataTask = [[SYNetworkRequest shareRequest] requestWithUrl:url parameters:dict methord:@"post" uploadProgress:^(NSProgress *progress) {
             NSLog(@"\nupload progress = %@", @(progress.fractionCompleted));
         } downloadProgress:^(NSProgress *progress) {
             NSLog(@"\ndownload progress = %@", @(progress.fractionCompleted));
         } complete:^(NSURLResponse *response, id responseObject, NSError *error) {
-            NSLog(@"\nrespone = %@\nresponseObject = %@\n", response, responseObject);
+            NSString *object = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            NSLog(@"\nrespone = %@\nresponseObject = %@\nobject = %@\n", response, responseObject, object);
         }];
         [dataTask resume];
+        
+//        [self requestDataTask];
     }
     else if (3 == indexPath.row)
     {
         // UPLOAD
+        
+        
     }
     else if (4 == indexPath.row)
     {
@@ -126,6 +133,9 @@
             NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
         }];
         [dataTask resume];
+        
+        
+        
     }
     else if (5 == indexPath.row || 6 == indexPath.row || 7 == indexPath.row)
     {
@@ -145,6 +155,117 @@
         
         [dataTask resume];
     }
+}
+
+#pragma mark - 源码示例
+
+- (void)requestDataTask
+{
+    NSString *url = @"http://192.168.3.99:8082/system-front/APIUser/getMsgCode";
+    NSDictionary *dict = @{@"phone":@(13510213244), @"msgType":@(1)};
+
+    // 源码示例：Data Task
+    
+//    NSURL *URL = [NSURL URLWithString:url];
+//    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    
+    // Query String Parameter Encoding
+//    NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"POST" URLString:url parameters:dict error:nil];
+    
+    // URL Form Parameter Encoding
+//    NSURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:@"POST" URLString:url parameters:dict error:nil];
+    
+    // POST Content-Type: application/json {"foo": "bar", "baz": [1,2,3]}
+//    NSURLRequest *request = [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:url parameters:dict error:nil];
+    
+    
+    
+//    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+//    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+//    NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+//        if (error)
+//        {
+//            NSLog(@"\nError = %@", error);
+//        }
+//        else
+//        {
+//            NSLog(@"\nresponse = %@\nresponseObject = %@\n", response, responseObject);
+//        }
+//    }];
+//    [dataTask resume];
+    
+    
+//    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+//    NSURLSessionDataTask *dataTask = [manager POST:url parameters:dict progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//        NSLog(@"\nsuccess response = %@\nresponseObject = %@\n", task.response, responseObject);
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        NSLog(@"\nfailure response = %@\nerror = %@\n", task.response, error);
+//    }];
+//    [dataTask resume];
+}
+
+- (void)requestUpload
+{
+    // 源码示例：Upload Task
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    
+    NSURL *URL = [NSURL URLWithString:@"http://example.com/upload"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    
+    NSURL *filePath = [NSURL fileURLWithPath:@"file://path/to/image.png"];
+    NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithRequest:request fromFile:filePath progress:nil completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        if (error) {
+            NSLog(@"Error: %@", error);
+        } else {
+            NSLog(@"Success: %@ %@", response, responseObject);
+        }
+    }];
+    [uploadTask resume];
+    
+//    NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:@"http://example.com/upload" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+//        [formData appendPartWithFileURL:[NSURL fileURLWithPath:@"file://path/to/image.jpg"] name:@"file" fileName:@"filename.jpg" mimeType:@"image/jpeg" error:nil];
+//    } error:nil];
+//    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+//    
+//    NSURLSessionUploadTask *uploadTask;
+//    uploadTask = [manager
+//                  uploadTaskWithStreamedRequest:request
+//                  progress:^(NSProgress * _Nonnull uploadProgress) {
+//                      // This is not called back on the main queue.
+//                      // You are responsible for dispatching to the main queue for UI updates
+//                      dispatch_async(dispatch_get_main_queue(), ^{
+//                          //Update the progress view
+//                          [progressView setProgress:uploadProgress.fractionCompleted];
+//                      });
+//                  }
+//                  completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+//                      if (error) {
+//                          NSLog(@"Error: %@", error);
+//                      } else {
+//                          NSLog(@"%@ %@", response, responseObject);
+//                      }
+//                  }];
+//    
+//    [uploadTask resume];
+}
+
+- (void)requestDownload
+{
+    // 源码示例：Download
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    
+    NSURL *URL = [NSURL URLWithString:@"http://example.com/download.zip"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    
+    NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
+        NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+        return [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
+    } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
+        NSLog(@"File downloaded to: %@", filePath);
+    }];
+    [downloadTask resume];
 }
 
 @end
