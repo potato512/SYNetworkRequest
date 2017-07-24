@@ -92,6 +92,16 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 
 
 # 修改完善
+* 20170725
+  * 修改baseUrl初始化异常
+~~~ javascript
+NSURL *baseUrl = self.hostUrl;
+if (![baseUrl.scheme isEqualToString:@"http"] && ![baseUrl.scheme isEqualToString:@"https"])
+{
+    baseUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", APIServiceHost]];
+}
+~~~
+
 * 20170724 
   * 版本更新1.1.0
     * 添加更加请求方式

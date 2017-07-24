@@ -86,6 +86,8 @@
         NSString *url = @"http://rapapi.org/mockjsdata/15885/getVerificationCode";
 //        NSDictionary *dict = @{@"phoneNumber":@(13800138000), @"timeStamp":@(456461015645646)};
         
+        [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeOther];
+        
         NSURLSessionDataTask *dataTask = [[SYNetworkRequest shareRequest] requestWithUrl:url parameters:nil methord:@"GET" uploadProgress:^(NSProgress *progress) {
             NSLog(@"\nupload progress = %@", @(progress.fractionCompleted));
         } downloadProgress:^(NSProgress *progress) {
@@ -98,12 +100,15 @@
     else if (2 == indexPath.row)
     {
         // POST
-//        NSString *url = @"http://rapapi.org/mockjsdata/15885/getVerificationCode";
-//        NSDictionary *dict = @{@"phoneNumber":@(13800138000), @"timeStamp":@(456461015645646)};
+        NSString *url = @"http://rapapi.org/mockjsdata/15885/getVerificationCode";
+        NSDictionary *dict = @{@"phoneNumber":@(13800138000), @"timeStamp":@(456461015645646)};
 //        NSString *url = @"http://192.168.3.99:8082/system-front/APIUser/getMsgCode";
 //        NSDictionary *dict = @{@"phone":@(13510213244), @"msgType":@(1)};
-        NSString *url = @"http://192.168.3.99:8088/system-api/user/getTest";
-        NSDictionary *dict = @{};
+//        NSString *url = @"http://192.168.3.99:8088/system-api/user/getTest";
+//        NSDictionary *dict = @{};
+        
+        [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeXML];
+        // [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeJSON];
         
         NSURLSessionDataTask *dataTask = [[SYNetworkRequest shareRequest] requestWithUrl:url parameters:dict methord:@"post" uploadProgress:^(NSProgress *progress) {
             NSLog(@"\nupload progress = %@", @(progress.fractionCompleted));
@@ -114,6 +119,8 @@
             NSLog(@"\nrespone = %@\nresponseObject = %@\nobject = %@\n", response, responseObject, object);
         }];
         [dataTask resume];
+        
+        
         
 //        [self requestDataTask];
     }
