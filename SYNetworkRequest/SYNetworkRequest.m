@@ -372,7 +372,6 @@ static NSString *const RequestPOST = @"POST";
     {
         self.managerHttp.requestSerializer = [AFJSONRequestSerializer serializer];
         [self.managerHttp.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-        // self.managerHttp.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/html", nil];
         self.managerHttp.requestSerializer.timeoutInterval = APIServiceTimeout;
     }
     else if (RequestContentTypeOther == requestType)
