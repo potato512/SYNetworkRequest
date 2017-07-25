@@ -326,7 +326,7 @@ static NSString *const RequestPOST = @"POST";
     if (_managerHttp == nil)
     {
         NSURL *baseUrl = self.hostUrl;
-        if (![baseUrl.scheme isEqualToString:@"http"])
+        if (![baseUrl.scheme isEqualToString:@"http"] && ![baseUrl.scheme isEqualToString:@"https"])
         {
             baseUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", APIServiceHost]];
         }
