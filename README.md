@@ -92,6 +92,10 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 
 
 # 修改完善
+* 20170801
+  * 修改上传文件方法
+  * 添加版本号1.1.2
+
 * 20170725
   * 修改baseUrl初始化异常
 ~~~ javascript

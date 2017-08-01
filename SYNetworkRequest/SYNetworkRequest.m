@@ -196,6 +196,7 @@ static NSString *const RequestPOST = @"POST";
  *  @param dict           请求参数
  *  @param isStream       文件流上传方式
  *  @param filePath       文件路径
+ *  @param name           上传标识名称，如：@"file"，或@"iconImg"
  *  @param fileName       文件名称，如：@"filename.jpg"
  *  @param fileType       文件类型，如：@"image/jpeg"
  *  @param uploadProgress 上传进度回调
@@ -207,6 +208,7 @@ static NSString *const RequestPOST = @"POST";
                                       parameters:(NSDictionary *)dict
                                       streamType:(BOOL)isStream
                                         filePath:(NSString *)filePath
+                                            name:(NSString *)name
                                         fileName:(NSString *)fileName
                                         fileType:(NSString *)fileType
                                   uploadProgress:(void (^)(NSProgress *progress))uploadProgress
@@ -215,7 +217,7 @@ static NSString *const RequestPOST = @"POST";
     NSURLSessionUploadTask *uploadTask = nil;
     if (isStream)
     {
-        uploadTask = [self uploadStreamWithUrl:url filePath:filePath fileName:fileName fileType:fileType parameters:dict uploadProgress:uploadProgress complete:complete];
+        uploadTask = [self uploadStreamWithUrl:url filePath:filePath name:name fileName:fileName fileType:fileType parameters:dict uploadProgress:uploadProgress complete:complete];
     }
     else
     {
@@ -231,14 +233,11 @@ static NSString *const RequestPOST = @"POST";
                            uploadProgress:(void (^)(NSProgress *progress))uploadProgress
                                  complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete
 {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-    
     NSURL *requestUrl = [NSURL URLWithString:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:requestUrl];
     
     NSURL *filePathUrl = [NSURL fileURLWithPath:filePath];
-    NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithRequest:request fromFile:filePathUrl progress:^(NSProgress * _Nonnull progress) {
+    NSURLSessionUploadTask *uploadTask = [self.managerHttp uploadTaskWithRequest:request fromFile:filePathUrl progress:^(NSProgress * _Nonnull progress) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (uploadProgress)
             {
@@ -252,6 +251,7 @@ static NSString *const RequestPOST = @"POST";
 
 - (NSURLSessionUploadTask *)uploadStreamWithUrl:(NSString *)url
                                        filePath:(NSString *)filePath
+                                           name:(NSString *)name
                                        fileName:(NSString *)fileName
                                        fileType:(NSString *)fileType
                                      parameters:(NSDictionary *)dict
@@ -259,12 +259,10 @@ static NSString *const RequestPOST = @"POST";
                                        complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete
 {
     NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:url parameters:dict constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        [formData appendPartWithFileURL:[NSURL fileURLWithPath:filePath] name:@"file" fileName:fileName mimeType:fileType error:nil];
+        [formData appendPartWithFileURL:[NSURL fileURLWithPath:filePath] name:name fileName:fileName mimeType:fileType error:nil];
     } error:nil];
     
-    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    
-    NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithStreamedRequest:request progress:^(NSProgress * _Nonnull progress) {
+    NSURLSessionUploadTask *uploadTask = [self.managerHttp uploadTaskWithStreamedRequest:request progress:^(NSProgress * _Nonnull progress) {
         // This is not called back on the main queue.
         // You are responsible for dispatching to the main queue for UI updates
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -295,13 +293,10 @@ static NSString *const RequestPOST = @"POST";
                                     downloadProgress:(void (^)(NSProgress *uploadProgress))downloadProgress
                                             complete:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))complete
 {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-    
     NSURL *URL = [NSURL URLWithString:url];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     
-    NSURLSessionDownloadTask *downloadTask = [manager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull progress) {
+    NSURLSessionDownloadTask *downloadTask = [self.managerHttp downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull progress) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (downloadProgress)
             {

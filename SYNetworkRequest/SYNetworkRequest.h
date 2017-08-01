@@ -153,6 +153,7 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
  *  @param dict           请求参数
  *  @param isStream       文件流上传方式
  *  @param filePath       文件路径
+ *  @param name           上传标识名称，如：@"file"，或@"iconImg"
  *  @param fileName       文件名称，如：@"filename.jpg"
  *  @param fileType       文件类型，如：@"image/jpeg"
  *  @param uploadProgress 上传进度回调
@@ -164,6 +165,7 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
                                       parameters:(NSDictionary *)dict
                                       streamType:(BOOL)isStream
                                         filePath:(NSString *)filePath
+                                            name:(NSString *)name
                                         fileName:(NSString *)fileName
                                         fileType:(NSString *)fileType
                                   uploadProgress:(void (^)(NSProgress *progress))uploadProgress
@@ -185,6 +187,5 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
                                           parameters:(NSDictionary *)dict
                                     downloadProgress:(void (^)(NSProgress *uploadProgress))downloadProgress
                                             complete:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))complete;
-
 
 @end
