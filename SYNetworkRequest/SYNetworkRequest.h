@@ -168,7 +168,6 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
                         downloadProgress:(void (^)(NSProgress *progress))downloadProgress
                                 complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete;
 
-
 #pragma mark 文件上传请求
 
 /**
@@ -203,6 +202,7 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
  *
  *  @param url                   请求地址
  *  @param dict                  请求参数
+ *  @param methord               请求方式（GET/POST/PUT/DELETE/HEAD/PATCH）
  *  @param downloadProgress      下载进度回调
  *  @param complete              下载结果回调
  *
@@ -210,6 +210,7 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
  */
 - (NSURLSessionDownloadTask *)requestDownloadWithUrl:(NSString *)url
                                           parameters:(NSDictionary *)dict
+                                             methord:(NSString *)methord
                                     downloadProgress:(void (^)(NSProgress *uploadProgress))downloadProgress
                                             complete:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))complete;
 

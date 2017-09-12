@@ -94,6 +94,7 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 # 修改完善
 * 20170912
   * 版本号：1.2.0
+  * 文件下载请求添加请求参数及请求方式
   * 缓存枚举类型重命名
     * NetworkCacheType修改成RequestCacheType
     * NetworkCacheTime修改成RequestCacheTime

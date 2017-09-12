@@ -141,7 +141,7 @@
     {
         // DOWNLOAD
         NSString *url = @"http://img4.duitang.com/uploads/item/201210/24/20121024114802_sVwSR.jpeg";
-        NSURLSessionDownloadTask *dataTask = [[SYNetworkRequest shareRequest] requestDownloadWithUrl:url parameters:nil downloadProgress:^(NSProgress *uploadProgress) {
+        NSURLSessionDownloadTask *dataTask = [[SYNetworkRequest shareRequest] requestDownloadWithUrl:url parameters:nil methord:@"POST" downloadProgress:^(NSProgress *uploadProgress) {
             NSLog(@"\ndownload progress = %@", @(uploadProgress.fractionCompleted));
         } complete:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
             NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);

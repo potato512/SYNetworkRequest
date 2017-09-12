@@ -295,6 +295,7 @@ static NSString *const RequestPOST = @"POST";
  *
  *  @param url                   请求地址
  *  @param dict                  请求参数
+ *  @param methord               请求方式（GET/POST/PUT/DELETE/HEAD/PATCH）
  *  @param downloadProgress      下载进度回调
  *  @param complete              下载结果回调
  *
@@ -302,11 +303,11 @@ static NSString *const RequestPOST = @"POST";
  */
 - (NSURLSessionDownloadTask *)requestDownloadWithUrl:(NSString *)url
                                           parameters:(NSDictionary *)dict
+                                             methord:(NSString *)methord
                                     downloadProgress:(void (^)(NSProgress *uploadProgress))downloadProgress
                                             complete:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))complete
 {
-    NSURL *URL = [NSURL URLWithString:url];
-    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    NSMutableURLRequest *request = [self.managerHttp.requestSerializer requestWithMethod:methord URLString:url parameters:dict error:nil];
     
     NSURLSessionDownloadTask *downloadTask = [self.managerHttp downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull progress) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -322,7 +323,6 @@ static NSString *const RequestPOST = @"POST";
     
     return downloadTask;
 }
-
 
 #pragma mark - AFHTTPSessionManager
 
