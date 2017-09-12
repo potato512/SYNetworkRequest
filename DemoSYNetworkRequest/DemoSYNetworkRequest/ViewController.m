@@ -161,10 +161,8 @@
             NSLog(@"upload complete = %@", @(complete));
         } download:^(long long total, long long complete) {
             NSLog(@"download complete = %@", @(complete));
-        } complete:^(id object) {
-          
-            NSLog(@"object = %@", object);
-
+        } complete:^(RequestNetworkStatus networkStatus, id object) {
+      
         } target:self enableView:YES cacheType:cacheType cacheTime:NetworkCacheTimeDay];
         
         [dataTask resume];

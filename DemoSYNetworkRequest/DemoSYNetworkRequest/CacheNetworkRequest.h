@@ -19,7 +19,7 @@
                      responseContentType:(ResponseContentType)responseType
                                   upload:(void (^)(long long total, long long complete))upload
                                 download:(void (^)(long long total, long long complete))download
-                                complete:(void (^)(id object))complete
+                                complete:(void (^)(RequestNetworkStatus networkStatus, id object))complete
                                   target:(id)target
                               enableView:(BOOL)isEnable
                                cacheType:(NetworkCacheType)cacheType

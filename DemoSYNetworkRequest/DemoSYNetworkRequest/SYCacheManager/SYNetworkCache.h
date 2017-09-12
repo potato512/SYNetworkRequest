@@ -12,14 +12,17 @@
 /// 缓存策略
 typedef NS_ENUM(NSInteger, NetworkCacheType)
 {
+    /// 无缓存，总是请求最新的数据
+    NetworkCacheTypeDefault = 0,
+    
     /// 无视缓存，总是请求最新的数据
     NetworkCacheTypeAlways = 1,
     
     /// 缓存过期时，才请求最新的数据
-    NetworkCacheTypeWhileOverdue,
+    NetworkCacheTypeWhileOverdue = 2,
     
     /// 不做缓存处理
-    NetworkCacheTypeNever
+    NetworkCacheTypeNever = 3,
 };
 
 

@@ -17,19 +17,21 @@
                      responseContentType:(ResponseContentType)responseType
                                   upload:(void (^)(long long total, long long complete))upload
                                 download:(void (^)(long long total, long long complete))download
-                                complete:(void (^)(id object))complete
+                                complete:(void (^)(RequestNetworkStatus networkStatus, id object))complete
                                   target:(id)target
                               enableView:(BOOL)isEnable
                                cacheType:(NetworkCacheType)cacheType
                                cacheTime:(NSTimeInterval)cacheTime
 {
-    NSLog(@"当前网络状态：%@", ([SYNetworkRequest isReachable] ? @"可用" : @"不可用"));
+    NSLog(@"\n<-----------------\n当前网络状态：%@\n----------------->", ([SYNetworkRequest isReachable] ? @"可用" : @"不可用"));
     
+    /*
+    // 没有网络时
     if (![SYNetworkRequest isReachable])
     {
         if (complete)
         {
-            complete(nil);
+            complete(RequestNetworkInvalideNet, nil);
         }
         
         return nil;
@@ -85,6 +87,142 @@
     }
 
     return dataTask;
+    */
+    
+    NSLog(@"\n<-----------------\nurl = %@\ndict = %@\n----------------->", url, dict);
+    
+    NSURLSessionDataTask *dataTask = nil;
+    if (cacheType == NetworkCacheTypeAlways || cacheType == NetworkCacheTypeNever || cacheType == NetworkCacheTypeWhileOverdue)
+    {
+        // 有缓存
+        // 缓存key
+        NSMutableString *keyCache = [[NSMutableString alloc] initWithString:url];;
+        for (NSInteger index = 0; index < dict.allKeys.count; index++)
+        {
+            NSString *key = dict.allKeys[index];
+            NSString *value = [dict objectForKey:key];
+            NSString *keyValue = [NSString stringWithFormat:@"%@_%@", key, value];
+            
+            [keyCache appendFormat:@"&%@", keyValue];
+            if (index != dict.allKeys.count - 1)
+            {
+                [keyCache appendString:@"&"];
+            }
+        }
+        // 缓存
+        NSData *data = [[SYNetworkCache shareCache] getNetworkCacheContentWithCacheKey:keyCache];
+        // 存在缓存
+        if (cacheType == NetworkCacheTypeAlways || cacheType == NetworkCacheTypeNever)
+        {
+            // 不做缓存总是重新请求网络；无视缓存总是重新请求网络；
+            dataTask = [self requestWithUrl:url parameters:dict methord:type requestContentType:requestType responseContentType:responseType upload:upload download:download complete:^(RequestNetworkStatus networkStatus, id object) {
+                
+                if (complete)
+                {
+                    if (networkStatus == RequestNetworkInvalideNet)
+                    {
+                        if (data)
+                        {
+                            object = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                            networkStatus = RequestNetworkInvalideNetWithCache;
+                        }
+                        else
+                        {
+                            networkStatus = RequestNetworkInvalideNetWithoutCache;
+                        }
+                    }
+                    else if (networkStatus == RequestNetworkInvalideServer)
+                    {
+                        if (data)
+                        {
+                            object = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                            networkStatus = RequestNetworkInvalideServerWithCache;
+                        }
+                        else
+                        {
+                            networkStatus = RequestNetworkInvalideServerWithoutCache;
+                        }
+                    }
+                    complete(networkStatus, object);
+                }
+                
+                NSLog(@"\n<-----------------\nnetworkStatus = %@\ncacheType = %@\nobject = %@\n----------------->", @(networkStatus), @(cacheType), object);
+                
+                if (cacheType == NetworkCacheTypeAlways)
+                {
+                    [[SYNetworkCache shareCache] deleteNetworkCacheWithKey:keyCache];
+                    NSData *data = [object dataUsingEncoding:NSUTF8StringEncoding];
+                    [[SYNetworkCache shareCache] saveNetworkCacheData:data cachekey:keyCache cacheTime:cacheTime];
+                }
+            } target:target enableView:isEnable];
+        }
+        else if (cacheType == NetworkCacheTypeWhileOverdue)
+        {
+            RequestNetworkStatus networkStatus = RequestNetworkValid;
+            if (![SYNetworkRequest isReachable])
+            {
+                networkStatus = RequestNetworkInvalideNet;
+            }
+            
+            id object = nil;
+            if (data)
+            {
+                if (complete)
+                {
+                    if (![SYNetworkRequest isReachable])
+                    {
+                        networkStatus = RequestNetworkInvalideNetWithCache;
+                    }      
+                    
+                    object = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                    complete(networkStatus, object);
+                }
+                
+                NSLog(@"\n<-----------------\nnetworkStatus = %@\ncacheType = %@\nobject = %@\n----------------->", @(networkStatus), @(cacheType), object);
+                
+                return nil;
+            }
+            else
+            {
+                dataTask = [self requestWithUrl:url parameters:dict methord:type requestContentType:requestType responseContentType:responseType upload:upload download:download complete:^(RequestNetworkStatus networkStatus, id object) {
+                 
+                    if (complete)
+                    {
+                        if (networkStatus == RequestNetworkInvalideNet)
+                        {
+                            networkStatus = RequestNetworkInvalideNetWithoutCache;
+                        }
+                        else if (networkStatus == RequestNetworkInvalideServer)
+                        {
+                            networkStatus = RequestNetworkInvalideServerWithoutCache;
+                        }
+                        complete(networkStatus, object);
+                    }
+                    
+                    NSLog(@"\n<-----------------\nnetworkStatus = %@\ncacheType = %@\nobject = %@\n----------------->", @(networkStatus), @(cacheType), object);
+                    
+                    [[SYNetworkCache shareCache] deleteNetworkCacheWithKey:keyCache];
+                    NSData *data = [object dataUsingEncoding:NSUTF8StringEncoding];
+                    [[SYNetworkCache shareCache] saveNetworkCacheData:data cachekey:keyCache cacheTime:cacheTime];
+                } target:target enableView:isEnable];
+            }
+        }
+    }
+    else
+    {
+        // 无缓存
+        dataTask = [self requestWithUrl:url parameters:dict methord:type requestContentType:requestType responseContentType:responseType upload:upload download:download complete:^(RequestNetworkStatus networkStatus, id object) {
+            
+            NSLog(@"\n<-----------------\nnetworkStatus = %@\ncacheType = %@\nobject = %@\n----------------->", @(networkStatus), @(cacheType), object);
+            
+            if (complete)
+            {
+                complete(networkStatus, object);
+            }
+        } target:target enableView:isEnable];
+    }
+    
+    return dataTask;
 }
 
 + (NSURLSessionDataTask *)requestWithUrl:(NSString *)url
@@ -94,23 +232,21 @@
                      responseContentType:(ResponseContentType)responseType
                                   upload:(void (^)(long long total, long long complete))upload
                                 download:(void (^)(long long total, long long complete))download
-                                complete:(void (^)(id object))complete
+                                complete:(void (^)(RequestNetworkStatus networkStatus, id object))complete
                                   target:(id)target
                               enableView:(BOOL)isEnable
 {
-    NSLog(@"当前网络状态：%@", ([SYNetworkRequest isReachable] ? @"可用" : @"不可用"));
-    
+    // 没有网络时
     if (![SYNetworkRequest isReachable])
     {
         if (complete)
         {
-            complete(nil);
+            RequestNetworkStatus networkStatus = RequestNetworkInvalideNet;
+            complete(networkStatus, nil);
         }
         
         return nil;
     }
-    
-    NSLog(@"\nurl = %@ \ndict = %@", url, dict);
     
     // 显示加载符
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
@@ -166,8 +302,6 @@
         }
     } complete:^(NSURLResponse *response, id responseObject, NSError *error) {
         
-        NSLog(@"\n<--------\nresponseObject = %@\n-------->\n", responseObject);
-        
         // 隐藏加载符
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         
@@ -203,11 +337,14 @@
             responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         }
         
-        NSLog(@"\n<--------\nresponseString = %@\n-------->\n", responseString);
-        
         if (complete)
         {
-            complete(responseString);
+            RequestNetworkStatus networkStatus = RequestNetworkValid;
+            if (error)
+            {
+                networkStatus = RequestNetworkInvalideServer;
+            }
+            complete(networkStatus, responseString);
         }
     }];
     

@@ -27,6 +27,31 @@
 #import <AFNetworking/AFNetworking.h>
 #import <AFNetworking/AFHTTPSessionManager.h>
 
+/// 异常情况（外网异常、外网异常有缓存、外网异常无缓存、服务器异常、服务器异常有缓存、服务器异常无缓存）
+typedef NS_ENUM(NSInteger, RequestNetworkStatus)
+{
+    /// 正常情况
+    RequestNetworkValid = 0,
+    
+    /// 异常情况-外网异常
+    RequestNetworkInvalideNet = 1,
+    
+    /// 异常情况-外网异常有缓存
+    RequestNetworkInvalideNetWithCache = 2,
+    
+    /// 异常情况-外网异常无缓存
+    RequestNetworkInvalideNetWithoutCache = 3,
+    
+    /// 异常情况-服务器异常
+    RequestNetworkInvalideServer = 4,
+    
+    /// 异常情况-服务器异常有缓存
+    RequestNetworkInvalideServerWithCache = 5,
+    
+    /// 异常情况-服务器异常有缓存
+    RequestNetworkInvalideServerWithoutCache = 6,
+};
+
 /// 请求数据样式（XML，或JSON，或其他；默认其他）
 typedef NS_ENUM(NSInteger, RequestContentType)
 {
@@ -141,7 +166,7 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
                                  methord:(NSString *)methord
                           uploadProgress:(void (^)(NSProgress *progress))uploadProgress
                         downloadProgress:(void (^)(NSProgress *progress))downloadProgress
-                                complete:(void (^)(NSURLResponse *response, id responseObject,  NSError *error))complete;
+                                complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete;
 
 
 #pragma mark 文件上传请求

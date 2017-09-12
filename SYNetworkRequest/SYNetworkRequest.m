@@ -169,8 +169,20 @@ static NSString *const RequestPOST = @"POST";
                                  methord:(NSString *)methord
                           uploadProgress:(void (^)(NSProgress *progress))uploadProgress
                         downloadProgress:(void (^)(NSProgress *progress))downloadProgress
-                                complete:(void (^)(NSURLResponse *response, id responseObject,  NSError *error))complete
+                                complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete
 {
+    // 没有网络
+    if (![SYNetworkRequest isReachable])
+    {
+        if (complete)
+        {
+            NSError *error;
+            complete(nil, nil, error);
+        }
+        
+        return nil;
+    }
+    
     NSString *methordType = [methord uppercaseString];
     NSURLSessionDataTask *dataTask = [self.managerHttp dataTaskWithHTTPMethod:methordType URLString:url parameters:dict uploadProgress:uploadProgress downloadProgress:downloadProgress success:^(NSURLSessionDataTask *task, id responseObject) {
         if (complete)
