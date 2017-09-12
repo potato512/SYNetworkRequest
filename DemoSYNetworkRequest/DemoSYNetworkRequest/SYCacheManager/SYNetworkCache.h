@@ -10,27 +10,28 @@
 #import <UIKit/UIKit.h>
 
 /// 缓存策略
-typedef NS_ENUM(NSInteger, NetworkCacheType)
+typedef NS_ENUM(NSInteger, RequestCacheType)
 {
     /// 无缓存，总是请求最新的数据
-    NetworkCacheTypeDefault = 0,
+    RequestCacheTypeDefault = 0,
     
     /// 无视缓存，总是请求最新的数据
-    NetworkCacheTypeAlways = 1,
+    RequestCacheTypeAlways = 1,
     
     /// 缓存过期时，才请求最新的数据
-    NetworkCacheTypeWhileOverdue = 2,
+    RequestCacheTypeWhileOverdue = 2,
     
     /// 不做缓存处理
-    NetworkCacheTypeNever = 3,
+    RequestCacheTypeNever = 3,
 };
 
 
 /// 缓存时间长短 1 week
-static CGFloat const NetworkCacheTimeWeek = (60 * 60 * 24 * 7);
+static CGFloat const RequestCacheTimeWeek = (60 * 60 * 24 * 7);
 /// 缓存时间长短 1 day
-static CGFloat const NetworkCacheTimeDay = (60 * 60 * 24 * 1);
-
+static CGFloat const RequestCacheTimeDay = (60 * 60 * 24);
+/// 缓存时间长短 1 hour
+static CGFloat const RequestCacheTimeHour = (60 * 60);
 
 @interface SYNetworkCache : NSObject
 

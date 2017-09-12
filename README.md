@@ -94,6 +94,9 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 # 修改完善
 * 20170912
   * 版本号：1.2.0
+  * 缓存枚举类型重命名
+    * NetworkCacheType修改成RequestCacheType
+    * NetworkCacheTime修改成RequestCacheTime
   * 添加网络异常处理判断
     * 网络正常
     * 外网异常
