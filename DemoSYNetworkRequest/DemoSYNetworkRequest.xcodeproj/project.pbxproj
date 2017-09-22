@@ -20,6 +20,8 @@
 		A73FEBAE1F23668500163F29 /* CacheNetworkRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEBAD1F23668500163F29 /* CacheNetworkRequest.m */; };
 		A73FEBB41F2366A400163F29 /* SYCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEBB11F2366A400163F29 /* SYCacheManager.m */; };
 		A73FEBB51F2366A400163F29 /* SYNetworkCache.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FEBB31F2366A400163F29 /* SYNetworkCache.m */; };
+		A7F4CD701F74FC460084FBE7 /* HoneywellProductPKI.cacert in Resources */ = {isa = PBXBuildFile; fileRef = A7F4CD6E1F74FC460084FBE7 /* HoneywellProductPKI.cacert */; };
+		A7F4CD711F74FC460084FBE7 /* HoneywellProductServiceCA.cacert in Resources */ = {isa = PBXBuildFile; fileRef = A7F4CD6F1F74FC460084FBE7 /* HoneywellProductServiceCA.cacert */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +67,8 @@
 		A73FEBB21F2366A400163F29 /* SYNetworkCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYNetworkCache.h; sourceTree = "<group>"; };
 		A73FEBB31F2366A400163F29 /* SYNetworkCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SYNetworkCache.m; sourceTree = "<group>"; };
 		A7F1A2481F25EFB200849DA6 /* SYNetworkAFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYNetworkAFHTTPSessionManager.h; sourceTree = "<group>"; };
+		A7F4CD6E1F74FC460084FBE7 /* HoneywellProductPKI.cacert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HoneywellProductPKI.cacert; sourceTree = "<group>"; };
+		A7F4CD6F1F74FC460084FBE7 /* HoneywellProductServiceCA.cacert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HoneywellProductServiceCA.cacert; sourceTree = "<group>"; };
 		C6A66117D1B2F9B8319DE60B /* Pods-DemoSYNetworkRequest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DemoSYNetworkRequest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DemoSYNetworkRequest/Pods-DemoSYNetworkRequest.debug.xcconfig"; sourceTree = "<group>"; };
 		C78DCE62A41DF18AAEA58FD7 /* libPods-DemoSYNetworkRequest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DemoSYNetworkRequest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE051F988288DB8E3ED03A24 /* Pods-DemoSYNetworkRequest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DemoSYNetworkRequest.release.xcconfig"; path = "Pods/Target Support Files/Pods-DemoSYNetworkRequest/Pods-DemoSYNetworkRequest.release.xcconfig"; sourceTree = "<group>"; };
@@ -135,6 +139,7 @@
 				A73FEB6E1F23536C00163F29 /* ViewController.m */,
 				A73FEBAC1F23668500163F29 /* CacheNetworkRequest.h */,
 				A73FEBAD1F23668500163F29 /* CacheNetworkRequest.m */,
+				A7F4CD6D1F74FC2D0084FBE7 /* HttpsCer */,
 				A73FEBAF1F2366A400163F29 /* SYCacheManager */,
 				A73FEBA81F235B6C00163F29 /* SYNetworkRequest */,
 				A73FEB671F23536C00163F29 /* Supporting Files */,
@@ -192,6 +197,15 @@
 				A73FEBB31F2366A400163F29 /* SYNetworkCache.m */,
 			);
 			path = SYCacheManager;
+			sourceTree = "<group>";
+		};
+		A7F4CD6D1F74FC2D0084FBE7 /* HttpsCer */ = {
+			isa = PBXGroup;
+			children = (
+				A7F4CD6E1F74FC460084FBE7 /* HoneywellProductPKI.cacert */,
+				A7F4CD6F1F74FC460084FBE7 /* HoneywellProductServiceCA.cacert */,
+			);
+			path = HttpsCer;
 			sourceTree = "<group>";
 		};
 		EC025A298BF4D1E79DBD3780 /* Pods */ = {
@@ -312,6 +326,8 @@
 				A73FEB771F23536C00163F29 /* LaunchScreen.storyboard in Resources */,
 				A73FEB741F23536C00163F29 /* Assets.xcassets in Resources */,
 				A73FEB721F23536C00163F29 /* Main.storyboard in Resources */,
+				A7F4CD711F74FC460084FBE7 /* HoneywellProductServiceCA.cacert in Resources */,
+				A7F4CD701F74FC460084FBE7 /* HoneywellProductPKI.cacert in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
