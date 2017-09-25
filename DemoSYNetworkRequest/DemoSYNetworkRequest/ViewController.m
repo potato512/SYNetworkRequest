@@ -151,9 +151,6 @@
             NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
         }];
         [dataTask resume];
-        
-        
-        
     }
     else if (5 == indexPath.row || 6 == indexPath.row || 7 == indexPath.row)
     {
@@ -287,6 +284,34 @@
 
 - (void)httpsClick
 {
+    NSString *fileName = @"HoneywellProductPKI.cacert".stringByDeletingPathExtension;
+    NSString *fileType = @"HoneywellProductPKI.cacert".pathExtension;
+    
+    NSLog(@"fileName == %@, fileType == %@", fileName, fileType);
+    
+    
+    // 手机验证码
+    NSString *urlString = @"https://acscloud.honeywell.com.cn/v1/00100002/user";
+    // 参数
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    [dict setValue:@"SendVCode" forKey:@"type"];
+    [dict setValue:@"zh-CN" forKey:@"language"];
+    [dict setValue:@"+8613510213244" forKey:@"phoneNumber"];
+    //
+    [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeJSON];
+    [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeOther];
+    NSURLSessionDataTask *dataTask = [[SYNetworkRequest shareRequest] requestWithUrl:urlString parameters:dict methord:@"POST" isCertificates:NO certificates:nil uploadProgress:nil downloadProgress:nil complete:^(NSURLResponse *response, id responseObject, NSError *error) {
+        
+        NSLog(@"response == %@", response);
+        NSLog(@"responseObject == %@, class = %@", responseObject, [responseObject class]);
+        NSLog(@"error == %@", error);
+    }];
+    [dataTask resume];
+
+    
+    
+    
+    
     // 用户登录
 //    NSString *urlString = @"https://acscloud.honeywell.com.cn/v1/00100002/user";
 //    // 参数
@@ -298,37 +323,37 @@
 //    [dict setValue:@"ios" forKey:@"phoneType"];
 //    [dict setValue:@"zh-CN" forKey:@"language"];
     // 手机验证码
-    NSString *urlString = @"https://acscloud.honeywell.com.cn/v1/00100002/user";
-    // 参数
-    NSMutableDictionary *dict = [NSMutableDictionary new];
-    [dict setValue:@"SendVCode" forKey:@"type"];
-    [dict setValue:@"zh-CN" forKey:@"language"];
-    [dict setValue:@"+8613510213244" forKey:@"phoneNumber"];
-    // 证书配置-无证书
-    AFSecurityPolicy *securityPolicy = [AFSecurityPolicy defaultPolicy];
-    // allowInvalidCertificates 是否允许无效证书（也就是自建的证书），默认为NO
-    // 如果是需要验证自建证书，需要设置为YES
-    securityPolicy.allowInvalidCertificates = NO;
-    // 请求
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    manager.securityPolicy = securityPolicy;
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer]; // AFHTTPResponseSerializer AFJSONResponseSerializer
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/html", nil];
-    // AFHTTPRequestSerializer AFJSONRequestSerializer
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [manager.requestSerializer setValue:@"text/json" forHTTPHeaderField:@"Content-Type"];
-    manager.requestSerializer.timeoutInterval = 30.0;
-    [manager POST:urlString parameters:dict progress:^(NSProgress * _Nonnull uploadProgress) {
-        NSLog(@"uploadProgress === %@", uploadProgress);
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"responseObject === %@", responseObject);
-        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"string === %@", string);
-        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
-        NSLog(@"dict === %@", dict);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"error === %@", error);
-    }];
+//    NSString *urlString = @"https://acscloud.honeywell.com.cn/v1/00100002/user";
+//    // 参数
+//    NSMutableDictionary *dict = [NSMutableDictionary new];
+//    [dict setValue:@"SendVCode" forKey:@"type"];
+//    [dict setValue:@"zh-CN" forKey:@"language"];
+//    [dict setValue:@"+8613510213244" forKey:@"phoneNumber"];
+//    // 证书配置-无证书
+//    AFSecurityPolicy *securityPolicy = [AFSecurityPolicy defaultPolicy];
+//    // allowInvalidCertificates 是否允许无效证书（也就是自建的证书），默认为NO
+//    // 如果是需要验证自建证书，需要设置为YES
+//    securityPolicy.allowInvalidCertificates = NO;
+//    // 请求
+//    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+//    manager.securityPolicy = securityPolicy;
+//    manager.responseSerializer = [AFHTTPResponseSerializer serializer]; // AFHTTPResponseSerializer AFJSONResponseSerializer
+//    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/html", @"text/plain", nil];
+//    // AFHTTPRequestSerializer AFJSONRequestSerializer
+//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+//    [manager.requestSerializer setValue:@"text/json" forHTTPHeaderField:@"Content-Type"];
+//    manager.requestSerializer.timeoutInterval = 30.0;
+//    [manager POST:urlString parameters:dict progress:^(NSProgress * _Nonnull uploadProgress) {
+//        NSLog(@"uploadProgress === %@", uploadProgress);
+//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//        NSLog(@"responseObject === %@", responseObject);
+//        NSString *string = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        NSLog(@"string === %@", string);
+//        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
+//        NSLog(@"dict === %@", dict);
+//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//        NSLog(@"error === %@", error);
+//    }];
 
     
     
