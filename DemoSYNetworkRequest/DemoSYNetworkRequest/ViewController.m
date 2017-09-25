@@ -290,13 +290,20 @@
     NSLog(@"fileName == %@, fileType == %@", fileName, fileType);
     
     
-    // 手机验证码
     NSString *urlString = @"https://acscloud.honeywell.com.cn/v1/00100002/user";
     // 参数
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    [dict setValue:@"SendVCode" forKey:@"type"];
+    // 参数-手机验证码
+//    [dict setValue:@"SendVCode" forKey:@"type"];
+//    [dict setValue:@"zh-CN" forKey:@"language"];
+//    [dict setValue:@"+8613510213244" forKey:@"phoneNumber"];
+    // 参数-登录
+    [dict setValue:@"LoginUser" forKey:@"type"];
+    [dict setValue:@"12345678" forKey:@"password"];
+    [dict setValue:@"+8615899882491" forKey:@"phoneNumber"];
+    [dict setValue:@"2371A6554DD28BBC8140AD55396AA071509D5" forKey:@"phoneUuid"];
+    [dict setValue:@"ios" forKey:@"phoneType"];
     [dict setValue:@"zh-CN" forKey:@"language"];
-    [dict setValue:@"+8613510213244" forKey:@"phoneNumber"];
     //
     [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeJSON];
     [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeOther];
@@ -304,6 +311,19 @@
         
         NSLog(@"response == %@", response);
         NSLog(@"responseObject == %@, class = %@", responseObject, [responseObject class]);
+        if ([responseObject isKindOfClass:[NSData class]])
+        {
+            NSString *result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            NSLog(@"result == %@", result);
+        }
+        else if ([responseObject isKindOfClass:[NSString class]])
+        {
+            
+        }
+        else if ([responseObject isKindOfClass:[NSDictionary class]])
+        {
+            
+        }
         NSLog(@"error == %@", error);
     }];
     [dataTask resume];

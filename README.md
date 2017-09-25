@@ -93,7 +93,7 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 
 # 修改完善
 * 20170925
-  * 版本号：1.3.0
+  * 版本号：1.3.1
   * 添加https请求
 
 * 20170912
