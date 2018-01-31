@@ -92,6 +92,28 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 
 
 # 修改完善
+* 20180131
+  * 版本号：1.3.2
+  * 添加网络状态变化处理
+    * 有无网络时发出通知
+    * 用户自定义接收网络状态变化通知，并执行相应方法
+
+```
+[[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameUnReachable object:nil];
+// 没有网络状态通知
+[[NSNotificationCenter defaultCenter] receiveNotificationWithName:kNotificationNameUnReachable target:self selector:@selector(networkUnReachability:)];
+- (void)networkUnReachability:(NSNotification *)notification
+{ }
+```
+```
+[[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameReachable object:nil];
+// 有网络状态通知
+[[NSNotificationCenter defaultCenter] receiveNotificationWithName:kNotificationNameReachable target:self selector:@selector(networkReachability:)];
+- (void)networkReachability:(NSNotification *)notification
+{ }
+```
+
+
 * 20170925
   * 版本号：1.3.1
   * 添加https请求

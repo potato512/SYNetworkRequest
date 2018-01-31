@@ -110,7 +110,26 @@ static NSString *const RequestPOST = @"POST";
     return [[AFNetworkReachabilityManager sharedManager] isReachableViaWWAN];
 }
 
-
+/// 网络情况判断
++ (void)netWorkReachability:(void (^)(AFNetworkReachabilityStatus status))handle
+{
+    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        
+        if (AFNetworkReachabilityStatusNotReachable == status || AFNetworkReachabilityStatusUnknown == status)
+        {
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameUnReachable object:nil];
+        }
+        else
+        {
+            [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameReachable object:nil];
+        }
+        
+        if (handle)
+        {
+            handle(status);
+        }
+    }];
+}
 
 /**
  *  网络判断

@@ -27,6 +27,21 @@
 #import <AFNetworking/AFNetworking.h>
 #import <AFNetworking/AFHTTPSessionManager.h>
 
+static NSString *const kNotificationNameUnReachable = @"NetworkNotReachable";
+static NSString *const kNotificationNameReachable   = @"NetworkReachable";
+/*
+ // 接收网络状态变化通知，并执行相关方法
+ // 没有网络状态通知
+ [[NSNotificationCenter defaultCenter] receiveNotificationWithName:kNotificationNameUnReachable target:self selector:@selector(networkUnReachability:)];
+ - (void)networkUnReachability:(NSNotification *)notification
+ { }
+ // 有网络状态通知
+ [[NSNotificationCenter defaultCenter] receiveNotificationWithName:kNotificationNameReachable target:self selector:@selector(networkReachability:)];
+ - (void)networkReachability:(NSNotification *)notification
+ { }
+*/
+
+
 /// 异常情况（外网异常、外网异常有缓存、外网异常无缓存、服务器异常、服务器异常有缓存、服务器异常无缓存）
 typedef NS_ENUM(NSInteger, RequestNetworkStatus)
 {
