@@ -153,6 +153,9 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
  */
 + (BOOL)isWWAN;
 
+/// 网络情况判断
++ (void)netWorkReachability:(void (^)(AFNetworkReachabilityStatus status))handle;
+
 /**
  *  网络判断
  *

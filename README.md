@@ -7,7 +7,9 @@
 
 使用注意事项
 * 网络状态
-  * 监测：[SYNetworkRequest networkMonitoring];
+  * 监测：
+    * [SYNetworkRequest networkMonitoring];
+    * [SYNetworkRequest netWorkReachability:nil];
   * 状态：[SYNetworkRequest isReachable];
   * 类型：[SYNetworkRequest isWIFI]; 或 [SYNetworkRequest isWWAN];
 
@@ -27,6 +29,7 @@
 
     // 网络环境监测
     [SYNetworkRequest networkMonitoring];
+    [SYNetworkRequest netWorkReachability:nil];
 
     [SYNetworkRequest startWithServiceHost:@"http://wwww.hao123.com"];
     // [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeOther];
@@ -92,6 +95,10 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 
 
 # 修改完善
+* 20180528
+  * 版本号：1.3.3
+  * 代码优化
+  
 * 20180131
   * 版本号：1.3.2
   * 添加网络状态变化处理

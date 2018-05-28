@@ -23,6 +23,7 @@
     
     // 网络环境监测
     [SYNetworkRequest networkMonitoring];
+    [SYNetworkRequest netWorkReachability:nil];
     
     
     [SYNetworkRequest startWithServiceHost:@"http://wwww.hao123.com"];
