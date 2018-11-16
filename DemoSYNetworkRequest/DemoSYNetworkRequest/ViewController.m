@@ -157,14 +157,14 @@
         // 缓存请求-reload/never/overDate
         NSString *url = @"http://rapapi.org/mockjsdata/15885/getUserInfo";
         
-        RequestCacheType cacheType = (5 == indexPath.row ? RequestCacheTypeAlways : (6 == indexPath.row ? RequestCacheTypeNever : RequestCacheTypeWhileOverdue));
+        NetworkCacheType cacheType = (5 == indexPath.row ? NetworkCacheTypeAlways : (6 == indexPath.row ? NetworkCacheTypeNever : NetworkCacheTypeWhileOverdue));
         NSURLSessionDataTask *dataTask = [CacheNetworkRequest requestWithUrl:url parameters:nil methord:RequestHttpTypeGET requestContentType:0 responseContentType:0 upload:^(long long total, long long complete) {
             NSLog(@"upload complete = %@", @(complete));
         } download:^(long long total, long long complete) {
             NSLog(@"download complete = %@", @(complete));
         } complete:^(RequestNetworkStatus networkStatus, id object) {
       
-        } target:self enableView:YES cacheType:cacheType cacheTime:RequestCacheTimeDay];
+        } target:self enableView:YES cacheType:cacheType cacheTime:NetworkCacheTimeDay];
         
         [dataTask resume];
     }

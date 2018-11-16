@@ -22,7 +22,7 @@
                                 complete:(void (^)(RequestNetworkStatus networkStatus, id object))complete
                                   target:(id)target
                               enableView:(BOOL)isEnable
-                               cacheType:(RequestCacheType)cacheType
+                               cacheType:(NetworkCacheType)cacheType
                                cacheTime:(NSTimeInterval)cacheTime;
 
 @end

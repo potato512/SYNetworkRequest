@@ -8,6 +8,12 @@
 
 #import "SYCacheManager.h"
 
+// 类型定义
+static NSString *userId = nil;
+// 便于单例销毁控制
+static SYCacheManager *sharedManager;
+static dispatch_once_t onceToken;
+//
 static NSString *const dataName = @"SYFMDB.db";
 
 @interface SYCacheManager ()
@@ -29,19 +35,31 @@ static NSString *const dataName = @"SYFMDB.db";
 
 #pragma mark - 实例化
 
+// 初始化数据库类型
++ (void)initializeWithType:(NSString *)userType
+{
+    userId = userType;
+}
+
+// 销毁单例
++ (void)releaseCache
+{
+    sharedManager = nil;
+    onceToken=0l;
+}
+
 - (instancetype)init
 {
     self = [super init];
-    if (self)
-    {
+    if (self) {
 //        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 //        // NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 //        NSString *documentDirectory = [paths objectAtIndex:0];
 //        self.dataPath = [documentDirectory stringByAppendingPathComponent:dataName];
         
-        // 区分每个用户数据库
-        NSString *userId = @"";
-        NSString *userDBName = [NSString stringWithFormat:@"%@%@", userId, dataName];
+        // 区分每个类型数据库
+        NSString *userType = (userId ? userId : @"");
+        NSString *userDBName = [NSString stringWithFormat:@"%@%@", userType, dataName];
         self.dataHelper = [[LKDBHelper alloc] initWithDBName:userDBName];
     }
     
@@ -57,9 +75,6 @@ static NSString *const dataName = @"SYFMDB.db";
 /// 单例
 + (SYCacheManager *)shareCache
 {
-    static SYCacheManager *sharedManager;
-    static dispatch_once_t onceToken;
-    
     dispatch_once(&onceToken, ^{
         sharedManager = [[self alloc] init];
         assert(sharedManager != nil);
@@ -72,8 +87,7 @@ static NSString *const dataName = @"SYFMDB.db";
 
 - (NSString *)dataPath
 {
-    if (_dataPath == nil)
-    {
+    if (_dataPath == nil) {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         // NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *documentDirectory = [paths objectAtIndex:0];
@@ -88,8 +102,7 @@ static NSString *const dataName = @"SYFMDB.db";
 
 - (FMDatabase *)dataBase
 {
-    if (_dataBase == nil)
-    {
+    if (_dataBase == nil) {
         _dataBase = [FMDatabase databaseWithPath:self.dataPath];
     }
     return _dataBase;
@@ -102,8 +115,7 @@ static NSString *const dataName = @"SYFMDB.db";
 
 - (FMDatabaseQueue *)dataQueue
 {
-    if (_dataQueue == nil)
-    {
+    if (_dataQueue == nil) {
         _dataQueue = [FMDatabaseQueue databaseQueueWithPath:self.dataPath];
     }
     return _dataQueue;
@@ -231,13 +243,10 @@ static NSString *const dataName = @"SYFMDB.db";
 - (BOOL)newTableWithModel:(Class)class
 {
     BOOL isResult = NO;
-    if ([self.dataHelper isExistsWithTableName:NSStringFromClass(class) where:nil])
-    {
+    if ([self.dataHelper isExistsWithTableName:NSStringFromClass(class) where:nil]) {
         isResult = YES;
         NSLog(@"newTableWithModel = 已存在");
-    }
-    else
-    {
+    } else {
         isResult = [self.dataHelper createTableWithModelClass:class];
     }
     NSLog(@"newTableWithModel = %@", (isResult ? @"success" : @"error"));
@@ -264,22 +273,41 @@ static NSString *const dataName = @"SYFMDB.db";
 {
     BOOL isResult = NO;
 
-    if ([self.dataHelper isExistsModel:model])
-    {
+    if ([self.dataHelper isExistsModel:model]) {
         // 已存在时，先删除，且删除成功再保存
-        if ([self deleteModel:model])
-        {
+        if ([self deleteModel:model]) {
             isResult = [self.dataHelper insertWhenNotExists:model];
         }
-    }
-    else
-    {
-        // 不存在时，直接删除
+    } else {
+        // 不存在时，直接保存
         isResult = [self.dataHelper insertWhenNotExists:model];
     }
     
     NSLog(@"saveModel = %@", (isResult ? @"success" : @"error"));
     return isResult;
+}
+
+- (void)saveModel:(id)model callback:(void (^)(BOOL result))callback
+{
+    if ([self.dataHelper isExistsModel:model]) {
+        // 已存在时，先删除，且删除成功再保存
+        if ([self deleteModel:model]) {
+            [self.dataHelper insertToDB:model callback:^(BOOL result) {
+                NSLog(@"saveModel = %@", (result ? @"success" : @"error"));
+                if (callback) {
+                    callback(result);
+                }
+            }];
+        }
+    } else {
+        // 不存在时，直接保存
+        [self.dataHelper insertToDB:model callback:^(BOOL result) {
+            NSLog(@"saveModel = %@", (result ? @"success" : @"error"));
+            if (callback) {
+                callback(result);
+            }
+        }];
+    }
 }
 
 #pragma mark 修改数据
@@ -289,6 +317,16 @@ static NSString *const dataName = @"SYFMDB.db";
     BOOL isResult = [self.dataHelper updateToDB:model where:nil];
     NSLog(@"updateModel = %@", (isResult ? @"success" : @"error"));
     return isResult;
+}
+
+- (void)updateModel:(id)model callback:(void (^)(BOOL result))callback
+{
+    [self.dataHelper updateToDB:model where:nil callback:^(BOOL result) {
+        NSLog(@"updateModel = %@", (result ? @"success" : @"error"));
+        if (callback) {
+            callback(result);
+        }
+    }];
 }
 
 - (BOOL)updateModel:(Class)class value:(NSString *)value where:(id)where
@@ -302,15 +340,46 @@ static NSString *const dataName = @"SYFMDB.db";
 
 - (BOOL)deleteModel:(id)model
 {
+    [self.dataHelper deleteToDB:model callback:^(BOOL result) {
+        
+    }];
     BOOL isResult = [self.dataHelper deleteToDB:model];
-    NSLog(@"isResult = %@", (isResult ? @"success" : @"error"));
+    NSLog(@"deleteModel = %@", (isResult ? @"success" : @"error"));
     return isResult;
+}
+
+- (void)deleteModel:(id)model callback:(void (^)(BOOL result))callback
+{
+    [self.dataHelper deleteToDB:model callback:^(BOOL result) {
+        NSLog(@"deleteModel = %@", (result ? @"success" : @"error"));
+        if (callback) {
+            callback(result);
+        }
+    }];
 }
 
 - (BOOL)deleteModel:(Class)class where:(id)where
 {
     BOOL isResult = [self.dataHelper deleteWithClass:class where:where];
-    NSLog(@"isResult = %@", (isResult ? @"success" : @"error"));
+    NSLog(@"deleteModel = %@", (isResult ? @"success" : @"error"));
+    return isResult;
+}
+
+- (void)deleteModel:(Class)class where:(id)where callback:(void (^)(BOOL result))callback
+{
+    [self.dataHelper deleteWithClass:class where:where callback:^(BOOL result) {
+        NSLog(@"deleteModel = %@", (result ? @"success" : @"error"));
+        if (callback) {
+            callback(result);
+        }
+    }];
+}
+
+- (BOOL)deleteAllModel:(Class)class
+{
+//    [LKDBHelper clearTableData:class];
+    BOOL isResult = [self.dataHelper deleteWithClass:class where:nil];
+    NSLog(@"deleteModel = %@", (isResult ? @"success" : @"error"));
     return isResult;
 }
 
@@ -318,6 +387,20 @@ static NSString *const dataName = @"SYFMDB.db";
 
 - (NSArray *)readModel:(Class)class where:(id)where
 {
+    NSArray *array = [self readModel:class column:nil where:where orderBy:nil offset:0 count:0];
+    return array;
+}
+
+- (void)readModel:(Class)class where:(id)where callback:(void (^)(NSMutableArray *array))callback
+{
+    [self readModel:class where:where orderBy:nil offset:0 count:0 callback:callback];
+}
+
+- (NSArray *)readModel:(Class)class column:(id)column where:(id)where orderBy:(NSString *)orderBy offset:(NSInteger)offset count:(NSInteger)count
+{
+    // 查找字段：@"字段1,字段2"
+    
+    // 查找条件：
     //  根据 and 条件 查询所有数据 NSString *conditions = @"age = 23 and name = '张三1'";
     //  根据 字典条件，查询所有数据 NSDictionary *conditions1 = @{@"age" : @23, @"name" : @"张三1"};
     //  根据 or 条件，查询所有数据 NSString *conditions2 = @"age = 23 or ID = 5";
@@ -325,8 +408,23 @@ static NSString *const dataName = @"SYFMDB.db";
     //  根据 字典 in 条件，查询所有数据 NSDictionary *conditions4 = @{@"age" : @[@23, @24]};
     //  查询符合条件的数据有多少条 NSString *conditions5 = @"age = 23 and name = '张三1'";
     
-    NSArray *array = [self.dataHelper search:class column:nil where:where orderBy:nil offset:0 count:0];
+    // 排序查询：升序 "排序字段 asc"; 降序 "排序字段 desc"
+    
+    // 偏移量：10表示从第11个读取，23表示从第24个读取
+    
+    // 读取数量：10表示从数据库读10个
+    
+    NSArray *array = [self.dataHelper search:class column:column where:where orderBy:orderBy offset:offset count:count];
     return array;
+}
+
+- (void)readModel:(Class)class where:(id)where orderBy:(NSString *)orderBy offset:(NSInteger)offset count:(NSInteger)count callback:(void (^)(NSMutableArray *array))callback
+{
+    [self.dataHelper search:class where:where orderBy:orderBy offset:offset count:count callback:^(NSMutableArray *array) {
+        if (callback) {
+            callback(array);
+        }
+    }];
 }
 
 @end

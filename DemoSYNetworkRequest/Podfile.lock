@@ -19,17 +19,29 @@ PODS:
   - FMDB/standard (2.6.2)
   - LKDBHelper (2.1.9):
     - FMDB
+  - SYCacheManager (2.0.1):
+    - FMDB
+    - LKDBHelper
 
 DEPENDENCIES:
   - AFNetworking (~> 3.1.0)
   - FMDB (~> 2.6.2)
   - LKDBHelper (~> 2.1.9)
+  - SYCacheManager
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AFNetworking
+    - FMDB
+    - LKDBHelper
+    - SYCacheManager
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   FMDB: 854a0341b4726e53276f2a8996f06f1b80f9259a
   LKDBHelper: 78e6c0de99f45375892223a334535d745a123dbd
+  SYCacheManager: 887cde747a4bc4a7e4f69735ae7c8b9afa36a5ef
 
-PODFILE CHECKSUM: b137a20a4246924b713be5b1364dedd597800324
+PODFILE CHECKSUM: efc9d75563d8b29127dd9c059b5b5377230d7095
 
-COCOAPODS: 1.2.1.beta.1
+COCOAPODS: 1.5.3

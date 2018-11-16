@@ -31,10 +31,8 @@ static NSString *const RequestPOST = @"POST";
 - (instancetype)init
 {
     self = [super init];
-    if (self)
-    {
-        if (!self.hostUrl.host)
-        {
+    if (self) {
+        if (!self.hostUrl.host) {
             NSLog(@"<-------没有设置host，请先调用“startWithServiceHost:”设置host------->");
         }
         NSAssert(self.hostUrl.host != nil, @"self.hostUrl must be non-nil");
@@ -72,8 +70,7 @@ static NSString *const RequestPOST = @"POST";
 
 - (NSURL *)hostUrl
 {
-    if (!_hostUrl)
-    {
+    if (!_hostUrl) {
         _hostUrl = [NSURL URLWithString:APIServiceHost];
     }
     
@@ -118,14 +115,11 @@ static NSString *const RequestPOST = @"POST";
         if (AFNetworkReachabilityStatusNotReachable == status || AFNetworkReachabilityStatusUnknown == status)
         {
             [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameUnReachable object:nil];
-        }
-        else
-        {
+        } else {
             [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameReachable object:nil];
         }
         
-        if (handle)
-        {
+        if (handle) {
             handle(status);
         }
     }];
@@ -154,8 +148,7 @@ static NSString *const RequestPOST = @"POST";
     BOOL didRetrieveFlags = SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags);
     CFRelease(defaultRouteReachability);
     
-    if (!didRetrieveFlags)
-    {
+    if (!didRetrieveFlags) {
         NSLog(@"Error: Could not recover network reachability flags");
         return NO;
     }
@@ -193,8 +186,7 @@ static NSString *const RequestPOST = @"POST";
     // 没有网络
     if (![SYNetworkRequest isReachable])
     {
-        if (complete)
-        {
+        if (complete) {
             NSError *error;
             complete(nil, nil, error);
         }
@@ -204,13 +196,11 @@ static NSString *const RequestPOST = @"POST";
     
     NSString *methordType = [methord uppercaseString];
     NSURLSessionDataTask *dataTask = [self.managerHttp dataTaskWithHTTPMethod:methordType URLString:url parameters:dict uploadProgress:uploadProgress downloadProgress:downloadProgress success:^(NSURLSessionDataTask *task, id responseObject) {
-        if (complete)
-        {
+        if (complete) {
             complete(task.response, responseObject, nil);
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        if (complete)
-        {
+        if (complete) {
             complete(task.response, nil, error);
         }
     }];
@@ -248,8 +238,7 @@ static NSString *const RequestPOST = @"POST";
     // allowInvalidCertificates 是否允许无效证书（也就是自建的证书），默认为NO
     // 如果是需要验证自建证书，需要设置为YES
     securityPolicy.allowInvalidCertificates = NO;
-    if (isCertificates )
-    {
+    if (isCertificates ) {
         // 证书
         NSString *fileName = certificatesFile.stringByDeletingPathExtension;
         NSString *fileType = certificatesFile.pathExtension;
@@ -264,13 +253,11 @@ static NSString *const RequestPOST = @"POST";
     
     self.managerHttp.securityPolicy = securityPolicy;
     NSURLSessionDataTask *dataTask = [self.managerHttp dataTaskWithHTTPMethod:methord URLString:url parameters:dict uploadProgress:uploadProgress downloadProgress:downloadProgress success:^(NSURLSessionDataTask *task, id responseObject) {
-        if (complete)
-        {
+        if (complete) {
             complete(task.response, responseObject, nil);
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        if (complete)
-        {
+        if (complete) {
             complete(task.response, nil, error);
         }
     }];
@@ -306,12 +293,9 @@ static NSString *const RequestPOST = @"POST";
                                         complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete
 {
     NSURLSessionUploadTask *uploadTask = nil;
-    if (isStream)
-    {
+    if (isStream) {
         uploadTask = [self uploadStreamWithUrl:url filePath:filePath name:name fileName:fileName fileType:fileType parameters:dict uploadProgress:uploadProgress complete:complete];
-    }
-    else
-    {
+    } else {
         uploadTask = [self uploadWithUrl:url parameters:dict filePath:filePath uploadProgress:uploadProgress complete:complete];
     }
     
@@ -330,8 +314,7 @@ static NSString *const RequestPOST = @"POST";
     NSURL *filePathUrl = [NSURL fileURLWithPath:filePath];
     NSURLSessionUploadTask *uploadTask = [self.managerHttp uploadTaskWithRequest:request fromFile:filePathUrl progress:^(NSProgress * _Nonnull progress) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (uploadProgress)
-            {
+            if (uploadProgress) {
                 uploadProgress(progress);
             }
         });
@@ -357,8 +340,7 @@ static NSString *const RequestPOST = @"POST";
         // This is not called back on the main queue.
         // You are responsible for dispatching to the main queue for UI updates
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (uploadProgress)
-            {
+            if (uploadProgress) {
                 uploadProgress(progress);
             }
         });
@@ -390,8 +372,7 @@ static NSString *const RequestPOST = @"POST";
     
     NSURLSessionDownloadTask *downloadTask = [self.managerHttp downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull progress) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (downloadProgress)
-            {
+            if (downloadProgress) {
                 downloadProgress(progress);
             }
         });
@@ -409,17 +390,14 @@ static NSString *const RequestPOST = @"POST";
 
 - (AFHTTPSessionManager *)managerHttp
 {
-    if (_managerHttp == nil)
-    {
+    if (_managerHttp == nil) {
         NSURL *baseUrl = self.hostUrl;
-        if (![baseUrl.scheme isEqualToString:@"http"] && ![baseUrl.scheme isEqualToString:@"https"])
-        {
+        if (![baseUrl.scheme isEqualToString:@"http"] && ![baseUrl.scheme isEqualToString:@"https"]) {
             baseUrl = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", APIServiceHost]];
         }
         
         _managerHttp = [[AFHTTPSessionManager alloc] initWithBaseURL:baseUrl];
-        if ([baseUrl.scheme isEqualToString:@"https"])
-        {
+        if ([baseUrl.scheme isEqualToString:@"https"]) {
             _managerHttp.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
         }
     }
@@ -450,18 +428,13 @@ static NSString *const RequestPOST = @"POST";
     _requestType = requestType;
     
     // 请求数据样式
-    if (RequestContentTypeXML == requestType)
-    {
+    if (RequestContentTypeXML == requestType) {
         self.managerHttp.requestSerializer = [AFPropertyListRequestSerializer serializer];
-    }
-    else if (RequestContentTypeJSON == requestType)
-    {
+    } else if (RequestContentTypeJSON == requestType) {
         self.managerHttp.requestSerializer = [AFJSONRequestSerializer serializer];
         [self.managerHttp.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
         self.managerHttp.requestSerializer.timeoutInterval = APIServiceTimeout;
-    }
-    else if (RequestContentTypeOther == requestType)
-    {
+    } else if (RequestContentTypeOther == requestType) {
         // 默认
         self.managerHttp.requestSerializer = [AFHTTPRequestSerializer serializer];
     }
@@ -472,18 +445,13 @@ static NSString *const RequestPOST = @"POST";
     _responseType = responseType;
     
     // 响应数据格式
-    if (ResponseContentTypeXML == responseType)
-    {
+    if (ResponseContentTypeXML == responseType) {
         // 返回格式-xml
         self.managerHttp.responseSerializer = [AFXMLParserResponseSerializer serializer];
-    }
-    else if (ResponseContentTypeJSON == responseType)
-    {
+    } else if (ResponseContentTypeJSON == responseType) {
         // 返回格式-json 默认
         self.managerHttp.responseSerializer = [AFJSONResponseSerializer serializer];
-    }
-    else if (ResponseContentTypeOther == responseType)
-    {
+    } else if (ResponseContentTypeOther == responseType) {
         // 返回格式-其他
         self.managerHttp.responseSerializer = [AFHTTPResponseSerializer serializer];
     }

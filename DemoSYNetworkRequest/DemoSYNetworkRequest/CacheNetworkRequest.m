@@ -20,7 +20,7 @@
                                 complete:(void (^)(RequestNetworkStatus networkStatus, id object))complete
                                   target:(id)target
                               enableView:(BOOL)isEnable
-                               cacheType:(RequestCacheType)cacheType
+                               cacheType:(NetworkCacheType)cacheType
                                cacheTime:(NSTimeInterval)cacheTime
 {
     NSLog(@"\n<-----------------\n当前网络状态：%@\n----------------->", ([SYNetworkRequest isReachable] ? @"可用" : @"不可用"));
@@ -92,7 +92,7 @@
     NSLog(@"\n<-----------------\nurl = %@\ndict = %@\n----------------->", url, dict);
     
     NSURLSessionDataTask *dataTask = nil;
-    if (cacheType == RequestCacheTypeAlways || cacheType == RequestCacheTypeNever || cacheType == RequestCacheTypeWhileOverdue)
+    if (cacheType == NetworkCacheTypeAlways || cacheType == NetworkCacheTypeNever || cacheType == NetworkCacheTypeWhileOverdue)
     {
         // 有缓存
         // 缓存key
@@ -112,7 +112,7 @@
         // 缓存
         NSData *data = [[SYNetworkCache shareCache] getNetworkCacheContentWithCacheKey:keyCache];
         // 存在缓存
-        if (cacheType == RequestCacheTypeAlways || cacheType == RequestCacheTypeNever)
+        if (cacheType == NetworkCacheTypeAlways || cacheType == NetworkCacheTypeNever)
         {
             // 不做缓存总是重新请求网络；无视缓存总是重新请求网络；
             dataTask = [self requestWithUrl:url parameters:dict methord:type requestContentType:requestType responseContentType:responseType upload:upload download:download complete:^(RequestNetworkStatus networkStatus, id object) {
@@ -148,7 +148,7 @@
                 
                 NSLog(@"\n<-----------------\nnetworkStatus = %@\ncacheType = %@\nobject = %@\n----------------->", @(networkStatus), @(cacheType), object);
                 
-                if (cacheType == RequestCacheTypeAlways)
+                if (cacheType == NetworkCacheTypeAlways)
                 {
                     [[SYNetworkCache shareCache] deleteNetworkCacheWithKey:keyCache];
                     NSData *data = [object dataUsingEncoding:NSUTF8StringEncoding];
@@ -156,7 +156,7 @@
                 }
             } target:target enableView:isEnable];
         }
-        else if (cacheType == RequestCacheTypeWhileOverdue)
+        else if (cacheType == NetworkCacheTypeWhileOverdue)
         {
             RequestNetworkStatus networkStatus = RequestNetworkValid;
             if (![SYNetworkRequest isReachable])

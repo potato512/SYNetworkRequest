@@ -95,6 +95,10 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 
 
 # 修改完善
+* 20181116
+  * 版本号：1.3.4
+  * 修改完善
+  
 * 20180528
   * 版本号：1.3.3
   * 代码优化
