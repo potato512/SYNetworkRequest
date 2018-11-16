@@ -5,6 +5,12 @@
 
 ![request.gif](./request.gif)
 
+
+使用介绍
+* 自动导入：使用命令pod `SYNetworkRequest` 导入到项目中
+* 手动导入：或下载源码后，将源码添加到项目中（注意：需要添加AFNetworking）
+
+
 使用注意事项
 * 网络状态
   * 监测：
