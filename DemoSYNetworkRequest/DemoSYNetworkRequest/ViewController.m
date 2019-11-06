@@ -26,15 +26,15 @@
     
     self.title = @"网络请求";
     
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"stop" style:UIBarButtonItemStyleDone target:self action:@selector(cancelClick)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"https" style:UIBarButtonItemStyleDone target:self action:@selector(httpsClick)];
     
-    self.array = @[@"network status", @"GET", @"POST", @"UPLOAD", @"DOWNLOAD", @"cache request-reload", @"cache request-never", @"cache request-overdate"];
+    self.array = @[@"network status", @"GET", @"POST", @"UPLOAD", @"DOWNLOAD", @"cache request-reload", @"cache request-never", @"cache request-overdate", @"cancel all"];
     
     UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     [self.view addSubview:tableView];
     tableView.backgroundColor = [UIColor clearColor];
     tableView.tableFooterView = [UIView new];
-    [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"UITableViewCell"];
     tableView.delegate = self;
     tableView.dataSource = self;
 }
@@ -62,7 +62,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"];
-    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UITableViewCell"];
+    }
     cell.textLabel.text = self.array[indexPath.row];
     
     return cell;
@@ -91,7 +93,7 @@
 //        NSDictionary *dict = @{@"phoneNumber":@(13800138000), @"timeStamp":@(456461015645646)};
         
         [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeOther];
-        
+        SYNetworkRequest.shareRequest.timeout = 10;
         NSURLSessionDataTask *dataTask = [[SYNetworkRequest shareRequest] requestWithUrl:url parameters:nil methord:@"GET" uploadProgress:^(NSProgress *progress) {
             NSLog(@"\nupload progress = %@", @(progress.fractionCompleted));
         } downloadProgress:^(NSProgress *progress) {
@@ -100,6 +102,8 @@
             NSLog(@"\nrespone = %@\nresponseObject = %@\n", response, responseObject);
         }];
         [dataTask resume];
+        
+        [SYNetworkRequest.shareRequest addRequest:dataTask];
     }
     else if (2 == indexPath.row)
     {
@@ -120,7 +124,7 @@
         
         [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeXML];
         // [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeJSON];
-        
+        SYNetworkRequest.shareRequest.timeout = 20;
         NSURLSessionDataTask *dataTask = [[SYNetworkRequest shareRequest] requestWithUrl:url parameters:dict methord:@"post" uploadProgress:^(NSProgress *progress) {
             NSLog(@"\nupload progress = %@", @(progress.fractionCompleted));
         } downloadProgress:^(NSProgress *progress) {
@@ -131,14 +135,14 @@
         }];
         [dataTask resume];
         
-        
+        [SYNetworkRequest.shareRequest addRequest:dataTask];
         
 //        [self requestDataTask];
     }
     else if (3 == indexPath.row)
     {
         // UPLOAD
-        
+        [self requestUpload];
         
     }
     else if (4 == indexPath.row)
@@ -151,6 +155,8 @@
             NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
         }];
         [dataTask resume];
+        
+        [SYNetworkRequest.shareRequest addRequest:dataTask];
     }
     else if (5 == indexPath.row || 6 == indexPath.row || 7 == indexPath.row)
     {
@@ -167,7 +173,17 @@
         } target:self enableView:YES cacheType:cacheType cacheTime:NetworkCacheTimeDay];
         
         [dataTask resume];
+        
+        [SYNetworkRequest.shareRequest addRequest:dataTask];
+    } else if (8 == indexPath.row) {
+        [SYNetworkRequest.shareRequest cancelAllRequest];
     }
+}
+
+- (void)cancelClick
+{
+    NSString *url = @"http://rapapi.org/mockjsdata/15885/getVerificationCode";
+    [SYNetworkRequest.shareRequest cancelRequest:url];
 }
 
 #pragma mark - 源码示例
@@ -236,6 +252,8 @@
     }];
     [uploadTask resume];
     
+    [SYNetworkRequest.shareRequest addRequest:uploadTask];
+    
 //    NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:@"http://example.com/upload" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
 //        [formData appendPartWithFileURL:[NSURL fileURLWithPath:@"file://path/to/image.jpg"] name:@"file" fileName:@"filename.jpg" mimeType:@"image/jpeg" error:nil];
 //    } error:nil];
@@ -279,6 +297,8 @@
         NSLog(@"File downloaded to: %@", filePath);
     }];
     [downloadTask resume];
+    
+    [SYNetworkRequest.shareRequest addRequest:downloadTask];
 }
 
 
@@ -329,7 +349,7 @@
     [dataTask resume];
 
     
-    
+    [SYNetworkRequest.shareRequest addRequest:dataTask];
     
     
     // 用户登录

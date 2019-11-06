@@ -24,7 +24,7 @@
 // [[SYNetworkRequest shareRequest] setRequestType:RequestContentTypeOther];
 // [[SYNetworkRequest shareRequest] setResponseType:ResponseContentTypeXML];
 
-使用示例
+### 使用示例
 ~~~ javascript
 #import "SYNetworkRequest.h"
 ~~~
@@ -99,8 +99,32 @@ NSLog(@"\nrespone = %@\nfilePath = %@\n", response, filePath);
 [dataTask resume];
 ~~~ 
 
+### 管理网络请求
+~~~ javascript
+// 添加管理
+NSURLSessionDataTask *dataTask = [[SYNetworkRequest shareRequest]...;
+[SYNetworkRequest.shareRequest addRequest:dataTask];
+~~~ 
+
+~~~ javascript
+// 取消某个请求
+NSString *url = @"http://rapapi.org/mockjsdata/15885/getVerificationCode";
+[SYNetworkRequest.shareRequest cancelRequest:url];
+~~~ 
+
+~~~ javascript
+// 取消全部请求
+[SYNetworkRequest.shareRequest cancelAllRequest];
+~~~ 
+
 
 # 修改完善
+* 20191106
+  * 版本号：1.3.5
+  * 修改优化
+    * 添加请求超时参数
+    * 添加请求管理方法
+
 * 20181116
   * 版本号：1.3.4
   * 修改完善

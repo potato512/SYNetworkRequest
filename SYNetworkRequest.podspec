@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "SYNetworkRequest"
-  s.version      = "1.3.4"
+  s.version      = "1.3.5"
   s.summary      = "SYNetworkRequest is network tool which used to request from network."
   s.homepage     = "https://github.com/potato512/SYNetworkRequest"
   s.license      = { :type => "MIT", :file => "LICENSE" }

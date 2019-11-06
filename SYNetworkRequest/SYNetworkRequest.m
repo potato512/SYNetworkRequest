@@ -20,6 +20,8 @@ static NSString *const RequestPOST = @"POST";
 
 @interface SYNetworkRequest ()
 
+@property (nonatomic, strong) NSMutableDictionary *networkDicts;
+
 @property (nonatomic, strong) NSURL *hostUrl;
 @property (nonatomic, strong) AFHTTPSessionManager *managerHttp;
 @property (nonatomic, strong) AFURLSessionManager *managerUrl;
@@ -40,6 +42,7 @@ static NSString *const RequestPOST = @"POST";
         NSLog(@"<-------已调用“startWithServiceHost:”设置servicehost------->");
         
         // 初始化请求格式、返回格式
+        self.timeout = APIServiceTimeout;
         self.responseType = ResponseContentTypeOther;
         self.requestType = RequestContentTypeOther;
     }
@@ -112,8 +115,7 @@ static NSString *const RequestPOST = @"POST";
 {
     [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         
-        if (AFNetworkReachabilityStatusNotReachable == status || AFNetworkReachabilityStatusUnknown == status)
-        {
+        if (AFNetworkReachabilityStatusNotReachable == status || AFNetworkReachabilityStatusUnknown == status) {
             [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameUnReachable object:nil];
         } else {
             [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationNameReachable object:nil];
@@ -184,8 +186,7 @@ static NSString *const RequestPOST = @"POST";
                                 complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete
 {
     // 没有网络
-    if (![SYNetworkRequest isReachable])
-    {
+    if (![SYNetworkRequest isReachable]) {
         if (complete) {
             NSError *error;
             complete(nil, nil, error);
@@ -407,6 +408,12 @@ static NSString *const RequestPOST = @"POST";
 
 #pragma mark setter
 
+- (void)setTimeout:(NSTimeInterval)timeout
+{
+    _timeout = timeout;
+    self.managerHttp.requestSerializer.timeoutInterval = _timeout;
+}
+
 /*
  // 请求格式
  AFHTTPRequestSerializer            二进制格式
@@ -422,7 +429,6 @@ static NSString *const RequestPOST = @"POST";
  AFImageResponseSerializer          Image
  AFCompoundResponseSerializer       组合
  */
-
 - (void)setRequestType:(RequestContentType)requestType
 {    
     _requestType = requestType;
@@ -433,7 +439,7 @@ static NSString *const RequestPOST = @"POST";
     } else if (RequestContentTypeJSON == requestType) {
         self.managerHttp.requestSerializer = [AFJSONRequestSerializer serializer];
         [self.managerHttp.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-        self.managerHttp.requestSerializer.timeoutInterval = APIServiceTimeout;
+//        self.managerHttp.requestSerializer.timeoutInterval = self.timeout;
     } else if (RequestContentTypeOther == requestType) {
         // 默认
         self.managerHttp.requestSerializer = [AFHTTPRequestSerializer serializer];
@@ -457,183 +463,43 @@ static NSString *const RequestPOST = @"POST";
     }
 }
 
-/*
-#pragma mark methord
+#pragma mark - 请求管理
 
-- (NSURLSessionDataTask *)requestWithUrl:(NSString *)url parameters:(NSDictionary *)dict httpType:(NSString *)type complete:(void (^)(NSURLResponse *response, id responseObject, NSError *error))complete
+ - (NSMutableDictionary *)networkDicts
 {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-     
-    // 网络异常判断 开始修改时，判断网络情况
-//    BOOL isBadNet = GetNetworkStatusNotReachable;
-    BOOL isBadNet = [manager.reachabilityManager isReachable];
-    DLog(@"当前网络状态：%@", (isBadNet ? @"不可用" : @"可用"));
-    if (isBadNet)
-    {
-        if (complete)
-        {
-            complete(nil, nil, nil);
-        }
-     
-        return nil;
+    if (_networkDicts == nil) {
+        _networkDicts = [[NSMutableDictionary alloc] init];
     }
-     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-     
-    NSString *requestUrl = url;
-    NSDictionary *requestDict = dict;
-    NSString *requestType = type; // @"POST" : @"GET"
-    DLog(@"\n request\n url=%@\n para=%@\n type=%@", requestUrl, requestDict, requestType);
-     
-    NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] requestWithMethod:requestType URLString:requestUrl parameters:nil error:nil];
-    // 设置请求body（参数dict转换成字符串json）
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:requestDict options:0 error:nil];
-    NSString *bodyJson = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    NSData *bodyData = [bodyJson dataUsingEncoding:NSUTF8StringEncoding];
-    DLog(@"bodyJson = %@", bodyJson);
-    request.HTTPBody = bodyData;
-     
-    NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:complete];
-     
-    return dataTask;
+    return _networkDicts;
 }
 
-
- *  网络请求——有效
- *
- *  @param url              API接口url
- *  @param dict             API请求参数
- *  @param isHTTPBody       参数格式（httpBody，或其他）
- *  @param type             请求样式（POST/GET）
- *  @param uploadProgress   请求上传回调(NSProgress * _Nonnull uploadProgress)
- *  @param downloadProgress 请求下载回调(NSProgress * _Nonnull downloadProgress)
- *  @param complete         请求结果回调(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error)
- *
- *  @return NSURLSessionDataTask（便于后续操作处理，如取消请求）
-
-- (NSURLSessionDataTask *)requestWithUrl:(NSString *)url parameters:(NSDictionary *)dict parametersType:(BOOL)isHTTPBody httpType:(NSString *)type uploadProgress:(void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress downloadProgress:(void (^)(NSProgress * _Nonnull downloadProgress))downloadProgress complete:(void (^)(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error))complete
+- (void)addRequest:(NSURLSessionTask *)task
 {
-    // 请求地址
-    NSString *requestURL = [[NSURL URLWithString:url relativeToURL:self.managerHttp.baseURL] absoluteString];
-    // 请求参数
-    NSDictionary *requestDict = dict;
-    // 请求样式 "POST" ，或"GET"
-    NSString *requestMethord = type; // (RequestHttpTypePOST == methordType ? @"POST" : @"GET");
-    // 创建请求
-    NSMutableURLRequest *request = nil;
-    // 设置请求body（参数dict转换成字符串json）
-    if (isHTTPBody)
-    {
-        request = [self.managerHttp.requestSerializer requestWithMethod:requestMethord URLString:requestURL parameters:nil error:nil];
-        if (requestDict && 0 != requestDict.count)
-        {
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:requestDict options:0 error:nil];
-            NSString *bodyJson = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            NSData *bodyData = [bodyJson dataUsingEncoding:NSUTF8StringEncoding];
-            DLog(@"\nbodyJson = %@", bodyJson);
-            request.HTTPBody = bodyData;
+    if ([task isKindOfClass:[NSURLSessionDataTask class]] || [task isKindOfClass:[NSURLSessionDownloadTask class]] || [task isKindOfClass:[NSURLSessionUploadTask class]]) {
+        NSString *key = task.currentRequest.URL.absoluteString;
+        if ([self.networkDicts.allKeys containsObject:key]) {
+            
+        } else {
+            [self.networkDicts setObject:task forKey:key];
         }
     }
-    else
-    {
-        request = [self.managerHttp.requestSerializer requestWithMethod:requestMethord URLString:requestURL parameters:requestDict error:nil];
+}
+
+- (void)cancelRequest:(NSString *)url
+{
+    if ([self.networkDicts.allKeys containsObject:url]) {
+        NSURLSessionTask *task = [self.networkDicts objectForKey:url];
+        [task cancel];
+        [self.networkDicts removeObjectForKey:url];
     }
-    
-    NSURLSessionDataTask *dataTask = [self.managerHttp dataTaskWithRequest:request uploadProgress:uploadProgress downloadProgress:downloadProgress completionHandler:complete];
-    
-    return dataTask;
 }
 
-
-- (NSURLSessionDataTask *)requestPOSTWithUrl:(NSString *)url
-                                      params:(NSDictionary *)params
-                                    complete:(void (^)(id responseObject))complete
+- (void)cancelAllRequest
 {
-    
-//    account=junjie.cai&password=E10ADC3949BA59ABBE56E057F20F883E
-//    bodyJson = {"account":"junjie.cai","password":"E10ADC3949BA59ABBE56E057F20F883E"}
-    
-    NSURLSessionDataTask *dataTask = [self.managerHttp POST:url parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        NSLog(@"responseObject = %@", responseObject);
-        
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
-    }];
-
-    return dataTask;
-}
-
-
-
-#pragma mark - AFURLSessionManager
-
-#pragma mark getter
-
-- (AFURLSessionManager *)managerUrl
-{
-    if (_managerUrl == nil)
-    {
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        _managerUrl = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    for (NSURLSessionTask *task in self.networkDicts.allValues) {
+        [task cancel];
     }
-    return _managerUrl;
+    [self.networkDicts removeAllObjects];
 }
-
-#pragma mark 信息请求
-
-- (NSURLSessionDataTask *)requestWithType:(RequestHttpType)type url:(NSString *)url parameters:(NSDictionary *)dict completionHandle:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completion
-{
-//    NSString *requestType = RequestPOST;
-//    if (RequestHttpTypeGET == type)
-//    {
-//        requestType = RequestGET;
-//    }
-//    
-//    NSURLSessionDataTask *dataTask = [self.sessionManagerHttp POST:url parameters:dict progress:^(NSProgress * _Nonnull uploadProgress) {
-//        
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        if (completion)
-//        {
-//            completion(task.response, responseObject, nil);
-//        }
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        if (completion)
-//        {
-//            completion(task.response, nil, error);
-//        }
-//    }];
-    
-    // 请求地址
-    NSString *requestURL = [[NSURL URLWithString:url relativeToURL:self.managerHttp.baseURL] absoluteString];
-    // 创建请求
-    NSURLRequest *request = [self.managerHttp.requestSerializer requestWithMethod:@"POST" URLString:requestURL parameters:dict error:nil];
-    
-    NSURLSessionDataTask *dataTask = [self.managerHttp dataTaskWithRequest:request uploadProgress:nil downloadProgress:nil completionHandler:completion];
-
-    return dataTask;
-}
-
-- (NSURLSessionDataTask *)requestPostWithUrl:(NSString *)url parameters:(NSDictionary *)dict completionHandle:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completion
-{
-    NSURLSessionDataTask *dataTask = [self requestWithType:RequestHttpTypePOST url:url parameters:dict completionHandle:completion];
-    return dataTask;
-}
-
-- (NSURLSessionDataTask *)requestGetWithUrl:(NSString *)url completionHandle:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completion
-{
-    NSURLSessionDataTask *dataTask = [self requestWithType:RequestHttpTypeGET url:url parameters:nil completionHandle:completion];
-    return dataTask;
-}
-
-#pragma mark 文件上传
-
-#pragma mark 文件下载
-*/
-
-
 
 @end

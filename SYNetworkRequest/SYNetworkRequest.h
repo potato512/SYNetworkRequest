@@ -43,82 +43,66 @@ static NSString *const kNotificationNameReachable   = @"NetworkReachable";
 
 
 /// 异常情况（外网异常、外网异常有缓存、外网异常无缓存、服务器异常、服务器异常有缓存、服务器异常无缓存）
-typedef NS_ENUM(NSInteger, RequestNetworkStatus)
-{
+typedef NS_ENUM(NSInteger, RequestNetworkStatus) {
     /// 正常情况
     RequestNetworkValid = 0,
-    
     /// 异常情况-外网异常
-    RequestNetworkInvalideNet = 1,
-    
+    RequestNetworkInvalideNet,
     /// 异常情况-外网异常有缓存
-    RequestNetworkInvalideNetWithCache = 2,
-    
+    RequestNetworkInvalideNetWithCache,
     /// 异常情况-外网异常无缓存
-    RequestNetworkInvalideNetWithoutCache = 3,
-    
+    RequestNetworkInvalideNetWithoutCache,
     /// 异常情况-服务器异常
-    RequestNetworkInvalideServer = 4,
-    
+    RequestNetworkInvalideServer,
     /// 异常情况-服务器异常有缓存
-    RequestNetworkInvalideServerWithCache = 5,
-    
+    RequestNetworkInvalideServerWithCache,
     /// 异常情况-服务器异常有缓存
-    RequestNetworkInvalideServerWithoutCache = 6,
+    RequestNetworkInvalideServerWithoutCache
 };
 
 /// 请求数据样式（XML，或JSON，或其他；默认其他）
-typedef NS_ENUM(NSInteger, RequestContentType)
-{
+typedef NS_ENUM(NSInteger, RequestContentType) {
     /// 请求数据样式-XML
     RequestContentTypeXML = 1,
-    
     /// 请求数据样式-JSON
-    RequestContentTypeJSON = 2,
-    
+    RequestContentTypeJSON,
     /// 请求数据样式-其他
-    RequestContentTypeOther = 3
+    RequestContentTypeOther
 };
 
 /// 响应数据样式（XML，或JSON，或其他；默认JSON）
-typedef NS_ENUM(NSInteger, ResponseContentType)
-{
+typedef NS_ENUM(NSInteger, ResponseContentType){
     /// 响应数据样式-XML
     ResponseContentTypeXML = 1,
-    
     /// 响应数据样式-JSON
-    ResponseContentTypeJSON = 2,
-    
+    ResponseContentTypeJSON,
     /// 响应数据样式-其他
-    ResponseContentTypeOther = 3
+    ResponseContentTypeOther
 };
 
 /// 请求类型（GET/POST/PUT/DELETE/HEAD/PATCH）
-typedef NS_ENUM(NSInteger, RequestHttpType)
-{
+typedef NS_ENUM(NSInteger, RequestHttpType) {
     /// 请求样式-POST
     RequestHttpTypePOST = 1,
-    
     /// 请求样式-GET
-    RequestHttpTypeGET = 2,
-    
+    RequestHttpTypeGET,
     /// 请求样式-PUT
-    RequestHttpTypePUT = 3,
-    
+    RequestHttpTypePUT,
     /// 请求样式-DELETE
-    RequestHttpTypeDELETE = 4,
-    
+    RequestHttpTypeDELETE,
     /// 请求样式-HEAD
-    RequestHttpTypeHEAD = 5,
-    
+    RequestHttpTypeHEAD,
     /// 请求样式-PATCH
-    RequestHttpTypePATCH = 6,
+    RequestHttpTypePATCH
 };
 
 @interface SYNetworkRequest : NSObject
 
 /// 单例
 + (SYNetworkRequest *)shareRequest;
+
+/// 网络请求超时（默认30）
+@property (nonatomic, assign) NSTimeInterval timeout;
 
 /// 响应数据样式（XML，或JSON，或其他；默认JSON）
 @property (nonatomic, assign) ResponseContentType responseType;
@@ -134,34 +118,18 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
 
 #pragma mark - 网络状态监测
 
-/**
- *  网络监测（APP启动时设置）
- */
+/// 网络监测（APP启动时设置）
 + (void)networkMonitoring;
 
-/**
- *  网络类型-WIFI
- *
- *  @return BOOL
- */
+/// 网络类型-WIFI
 + (BOOL)isWIFI;
-
-/**
- *  网络类型-WWAN
- *
- *  @return BOOL
- */
+/// 网络类型-WWAN
 + (BOOL)isWWAN;
+/// 网络判断
++ (BOOL)isReachable;
 
 /// 网络情况判断
 + (void)netWorkReachability:(void (^)(AFNetworkReachabilityStatus status))handle;
-
-/**
- *  网络判断
- *
- *  @return 是否有网
- */
-+ (BOOL)isReachable;
 
 #pragma mark - 网络请求
 
@@ -256,5 +224,13 @@ typedef NS_ENUM(NSInteger, RequestHttpType)
                                              methord:(NSString *)methord
                                     downloadProgress:(void (^)(NSProgress *uploadProgress))downloadProgress
                                             complete:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))complete;
+
+#pragma mark - 请求管理
+
+- (void)addRequest:(NSURLSessionTask *)task;
+
+- (void)cancelRequest:(NSString *)url;
+
+- (void)cancelAllRequest;
 
 @end
